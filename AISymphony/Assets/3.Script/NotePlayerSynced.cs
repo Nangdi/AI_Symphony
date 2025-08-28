@@ -84,8 +84,13 @@ public class NotePlayerSynced : MonoBehaviour
 
             if (note >= 0 && note < currentInstrument.Length)
             {
+                float tempVolume = 0.5f;
                 if (currenAudio != null && currenAudio.isPlaying)
+                {
+
+                    tempVolume = currenAudio.volume;
                     currenAudio.volume = 0;
+                }
                 int clipNum = note + (7 * (octave - 1));
                 currenAudio = audioPool[poolIndex % audioPool.Length];
                 currenAudio.clip = currentInstrument[clipNum];
@@ -106,7 +111,7 @@ public class NotePlayerSynced : MonoBehaviour
                 //}
                 //2옥타브일때 3옥타브일때 높은도 처리해야함
                 currenAudio.PlayScheduled(targetTime);
-                currenAudio.volume = 100;
+                currenAudio.volume = tempVolume;
                 poolIndex++;
             }
             lastScheduledStep = targetStep;
@@ -133,7 +138,7 @@ public class NotePlayerSynced : MonoBehaviour
         if (uITextManager != null) //메인 notePlayer에게만 할당했음 나머지 서브들은 null
         {
 
-            uITextManager.UpdateTypeText(label.Subtype, label.Subtype);
+            uITextManager.UpdateTypeText(label.Subtype, label.Family);
         }
         // 2) 서브멜로디 생성
         int[] subMelody = MelodyClassifier.SubMelodyGenerator.Generate(melody, label);
