@@ -5,11 +5,22 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum NotePlayerRole 
+{ 
+    Main,
+    Sub
+}
+
 public class NotePlayerSynced : MonoBehaviour
 {
     [SerializeField] private MusicalInstrumentsStore instrumentsStore;
     [SerializeField] private ScannerMover scannerMover;
+    [SerializeField] private UITextManager uITextManager;
+    [SerializeField] private ButtonGroupSelector[] buttonGroupSelectors;
+    [SerializeField] private NotePlayerSynced subPlayer;
 
+    [Header("Role")]
+    public NotePlayerRole role;
     [Header("Pattern")]
     public int[] melody = { 5, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -69,6 +80,8 @@ public class NotePlayerSynced : MonoBehaviour
         if (now >= targetTime)
         {
             int note = melody[targetStep % melody.Length];
+           
+
             if (note >= 0 && note < currentInstrument.Length)
             {
                 if (currenAudio != null && currenAudio.isPlaying)
@@ -96,15 +109,50 @@ public class NotePlayerSynced : MonoBehaviour
                 currenAudio.volume = 100;
                 poolIndex++;
             }
-
             lastScheduledStep = targetStep;
+            if (role== NotePlayerRole.Main &&(targetStep + 1) % melody.Length == 0 )
+            {
+                int[] tempAraay= new int[8];
+                for (int i = 0; i < melody.Length; i++)
+                {
+                    tempAraay[i] = melody[i] + 1;
+                }
+                // 8번째까지 예약이 끝난 시점
+                UpdateSubmelody(tempAraay);
+            }
 
             // 스캐너도 같은 스텝으로 이동
             //scannerMover.SetStep(targetStep % melody.Length);
         }
 
     }
+    public void UpdateSubmelody(int[] melody)
+    {
+        var label = MelodyClassifier.MelodyClassifier96.Classify(melody);
+        Debug.Log($"Label: {label.Subtype}, Family: {label.Family}");
+        if (uITextManager != null) //메인 notePlayer에게만 할당했음 나머지 서브들은 null
+        {
 
+            uITextManager.UpdateTypeText(label.Subtype, label.Subtype);
+        }
+        // 2) 서브멜로디 생성
+        int[] subMelody = MelodyClassifier.SubMelodyGenerator.Generate(melody, label);
+        int[] tempAraay = new int[8];
+        for (int i = 0; i < subMelody.Length; i++)
+        {
+            tempAraay[i] = subMelody[i] - 1;
+        }
+        ChangeMelody(subPlayer, tempAraay);
+        Debug.Log("SubMelody: [" + string.Join(",", tempAraay) + "]");
+    }
+    public void ChangeMelody(NotePlayerSynced player, int[] newMelody)
+    {
+        for (int i = 0; i < newMelody.Length; i++)
+        {
+            player.buttonGroupSelectors[i].groupButtons[newMelody[i]].onClick.Invoke();
+
+        }
+    }
     public void SetBPM(float newBpm)
     {
         clock.SetTempo(newBpm);
@@ -152,26 +200,26 @@ public class NotePlayerSynced : MonoBehaviour
     {
         int index = dropdown.value;
         currentInstrument = instrumentsStore.GetInstrument(index);
-        ResetOctaveOption(index);
+        //ResetOctaveOption(index);
     }
     public void ResetOctaveOption(int index)
     {
         Debug.Log(index);
         octaveDropdown.ClearOptions();
-        octaveDropdown.AddOptions(new List<string> { "1 octave", "2 octave", "3 octave" });
-        octaveDropdown.value = 1;
-        if (index < 2)
-        {
-            octaveDropdown.options.Remove(octaveDropdown.options[2]);
-            octaveDropdown.options.Remove(octaveDropdown.options[0]);
-            octaveDropdown.value = 0;
-        }
-        else if(index <4)
-        {
-            octaveDropdown.options.Remove(octaveDropdown.options[2]);
-            octaveDropdown.value = 1;
+        octaveDropdown.AddOptions(new List<string> { "3 octave", "4 octave" });
+        octaveDropdown.value = 0;
+        //if (index < 2)
+        //{
+        //    octaveDropdown.options.Remove(octaveDropdown.options[2]);
+        //    octaveDropdown.options.Remove(octaveDropdown.options[0]);
+        //    octaveDropdown.value = 0;
+        //}
+        //else if(index <4)
+        //{
+        //    octaveDropdown.options.Remove(octaveDropdown.options[2]);
+        //    octaveDropdown.value = 1;
 
-        }
+        //}
     }
 
     public void SetOctave()

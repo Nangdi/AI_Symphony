@@ -7,7 +7,7 @@ public class GlobalBeatClock : MonoBehaviour
     public static GlobalBeatClock I { get; private set; }
 
     [Header("Tempo")]
-    public float bpm = 120f;
+    public float bpm = 240f;
     public TMP_InputField bpmInput;
     [Range(1, 4)] public int division = 1; // 1=1/4, 2=1/8, 4=1/16
 

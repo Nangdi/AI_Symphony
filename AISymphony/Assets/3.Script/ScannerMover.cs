@@ -60,12 +60,16 @@ public class ScannerMover : MonoBehaviour
         //if (currentStep == 0)
         //    fromX = startX;
         //else
+        if(currentStep != -1)
+        {
             fromX = notePositions[currentStep].position.x;
+
+            transform.position = new Vector3(fromX, transform.position.y, transform.position.z);
+        }
 
         //if (nextStep == 0)
         //{
             // 끝에서 시작으로 넘어갈 때 → 순간 이동
-            transform.position = new Vector3(fromX, transform.position.y, transform.position.z);
         //    return;
         //}
         //else if (nextStep == 7)
