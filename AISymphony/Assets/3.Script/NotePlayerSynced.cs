@@ -133,7 +133,7 @@ public class NotePlayerSynced : MonoBehaviour
     }
     public void UpdateSubmelody(int[] melody)
     {
-        var label = MelodyClassifier.MelodyClassifier96.Classify(melody);
+        var label = MelodyClassifier.MelodyClassifier96.Classify(melody );
         Debug.Log($"Label: {label.Subtype}, Family: {label.Family}");
         if (uITextManager != null) //메인 notePlayer에게만 할당했음 나머지 서브들은 null
         {
@@ -150,6 +150,7 @@ public class NotePlayerSynced : MonoBehaviour
         ChangeMelody(subPlayer, tempAraay);
         Debug.Log("SubMelody: [" + string.Join(",", tempAraay) + "]");
     }
+    //서브멜로디 교체메소드
     public void ChangeMelody(NotePlayerSynced player, int[] newMelody)
     {
         for (int i = 0; i < newMelody.Length; i++)
