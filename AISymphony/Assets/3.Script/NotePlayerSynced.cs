@@ -18,11 +18,12 @@ public class NotePlayerSynced : MonoBehaviour
     [SerializeField] private UITextManager uITextManager;
     [SerializeField] private ButtonGroupSelector[] buttonGroupSelectors;
     [SerializeField] private NotePlayerSynced subPlayer;
+    [SerializeField] private NotePlayerSynced thirdPlayer;
 
     [Header("Role")]
     public NotePlayerRole role;
     [Header("Pattern")]
-    public int[] melody = { 5, 0, 0, 0, 0, 0, 0, 0 };
+    public int[] melody;
 
     [Header("Tempo")]
     public float bpm = 120f;
@@ -40,7 +41,9 @@ public class NotePlayerSynced : MonoBehaviour
     public TMP_Dropdown dropdown;
     public TMP_Dropdown octaveDropdown;
     public Toggle toggle;
-  
+    public TMP_Text debugGroupText;
+    public string debugCashingGroupText;
+    
 
     public int octave = 1;
 
@@ -51,8 +54,21 @@ public class NotePlayerSynced : MonoBehaviour
 
     //Test
     float currentTime;
+    private void Awake()
+    {
+        melody = new int[buttonGroupSelectors.Length];
+        for (int i = 0; i < buttonGroupSelectors.Length; i++)
+        {
+            buttonGroupSelectors[i].lineNum = i;
+        }
+        if (debugGroupText != null)
+        {
+            debugCashingGroupText = debugGroupText.text;
+        }
+    }
     void Start()
     {
+        
         clock = GlobalBeatClock.I; // 마스터 시계 참조
         if (clock == null)
         {
@@ -67,6 +83,8 @@ public class NotePlayerSynced : MonoBehaviour
         SetInstruments();
         toggle.onValueChanged.AddListener(OnToggleChanged);
         currentTime = bpm;
+
+      
     }
 
     void Update()
@@ -79,9 +97,8 @@ public class NotePlayerSynced : MonoBehaviour
         // lookAhead 안쪽이면 예약
         if (now >= targetTime)
         {
-            int note = melody[targetStep % melody.Length];
-           
-
+            int currentNoteIndex = targetStep % melody.Length;
+            int note = melody[currentNoteIndex];
             if (note >= 0 && note < currentInstrument.Length)
             {
                 float tempVolume = 0.5f;
@@ -114,17 +131,19 @@ public class NotePlayerSynced : MonoBehaviour
                 currenAudio.volume = tempVolume;
                 poolIndex++;
             }
-            lastScheduledStep = targetStep;
-            if (role== NotePlayerRole.Main /*&&(targetStep + 1) % melody.Length == 0*/ )
+            if (role == NotePlayerRole.Main /*&&(targetStep + 1) % melody.Length == 0*/ )
             {
-                int[] tempAraay= new int[8];
-                for (int i = 0; i < melody.Length; i++)
+                int[] tempAraay = new int[8];
+                int groupIndx = buttonGroupSelectors[currentNoteIndex].groupNum;
+                for (int i = 0; i < tempAraay.Length; i++)
                 {
-                    tempAraay[i] = melody[i] + 1;
+                    tempAraay[i] = melody[i + (8 * groupIndx)] + 1;
                 }
                 // 8번째까지 예약이 끝난 시점
+                UpdateDebugGroup(groupIndx);
                 UpdateSubmelody(tempAraay);
             }
+            lastScheduledStep = targetStep;
 
             // 스캐너도 같은 스텝으로 이동
             //scannerMover.SetStep(targetStep % melody.Length);
@@ -147,7 +166,9 @@ public class NotePlayerSynced : MonoBehaviour
         {
             tempAraay[i] = subMelody[i] - 1;
         }
+        int[] thirdMelod = GetHamony(melody, tempAraay);
         ChangeMelody(subPlayer, tempAraay);
+        ChangeMelody(thirdPlayer, thirdMelod);
         Debug.Log("SubMelody: [" + string.Join(",", tempAraay) + "]");
     }
     //서브멜로디 교체메소드
@@ -174,6 +195,8 @@ public class NotePlayerSynced : MonoBehaviour
         // 2) 글로벌 클럭 재설정
         bpm = clock.bpm;
         currentTime = bpm;
+
+
         // 3) 현재 시점의 스텝 계산
         int currentStep = Mathf.FloorToInt((float)clock.SongPosTicks) % melody.Length;
 
@@ -240,13 +263,20 @@ public class NotePlayerSynced : MonoBehaviour
             octave = octaveDropdown.value + 1;
         //}
     }
-    private void ShiftPool()
+  public int[] GetHamony(int[] main , int[] sub)
     {
-        Destroy(audioPool[0].transform.parent.gameObject);
-        GameObject ob = Instantiate(audioPrefab, transform, gameObject);
-        for (int i = 0; i < ob.transform.childCount; i++)
+
+        int[] temp = new int[8];
+        for (int i = 0; i < temp.Length; i++)
         {
-           ob.transform.GetChild(i).TryGetComponent(out audioPool[i]);
+            temp[i] = MelodyClassifier.GenerateOneHarmonyNote(main[i], sub[i]);
         }
+        Debug.Log(temp);
+        return temp;
+       
+    }
+    public void UpdateDebugGroup(int groupNum)
+    {
+        debugGroupText.text = debugCashingGroupText + groupNum;
     }
 }

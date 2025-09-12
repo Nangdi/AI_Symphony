@@ -20,7 +20,8 @@ public class ButtonGroupSelector : MonoBehaviour
     private NotePlayerSynced notePlayer;
     public List<Button> groupButtons;
     private Button selected;
-    public LineNum lineNum;
+    public int lineNum;
+    public int groupNum;
     void Start()
     {
         for (int i = 0; i < groupButtons.Count; i++)
@@ -34,6 +35,7 @@ public class ButtonGroupSelector : MonoBehaviour
         }
         int ran = Random.Range(0, 8);
         groupButtons[ran].onClick.Invoke();
+        groupNum = lineNum / 8;
     }
 
     void OnButtonSelected(Button btn)

@@ -19,7 +19,7 @@ public class ScannerMover : MonoBehaviour
     private GlobalBeatClock clock;
 
     [SerializeField] private Transform[] notePositions; // 0~7 노트 위치
-    [SerializeField] private int totalSteps = 8; // 노트 개수
+    [SerializeField] private int totalSteps =  8; // 노트 개수
 
     float startX;
     float endX;
@@ -43,7 +43,7 @@ public class ScannerMover : MonoBehaviour
         // 🎯 끝 X = 마지막 노트의 X + (마지막과 전 노트의 X 거리 절반)
         float lastHalfDist = (notePositions[totalSteps - 1].position.x - notePositions[totalSteps - 2].position.x) / 2f;
         endX = notePositions[totalSteps - 1].position.x + lastHalfDist;
-
+        totalSteps = notePositions.Length;
         //transform.position = new Vector3(notePositions[0].position.x, transform.position.y, transform.position.z);
     }
 
@@ -62,7 +62,7 @@ public class ScannerMover : MonoBehaviour
         //else
         if(currentStep != -1)
         {
-            fromX = notePositions[currentStep].position.x;
+            fromX = notePositions[currentStep].GetChild(0).position.x;
 
             transform.position = new Vector3(fromX, transform.position.y, transform.position.z);
         }
