@@ -115,7 +115,7 @@ public class NotePlayerSynced : MonoBehaviour
                 poolIndex++;
             }
             lastScheduledStep = targetStep;
-            if (role== NotePlayerRole.Main &&(targetStep + 1) % melody.Length == 0 )
+            if (role== NotePlayerRole.Main /*&&(targetStep + 1) % melody.Length == 0*/ )
             {
                 int[] tempAraay= new int[8];
                 for (int i = 0; i < melody.Length; i++)
