@@ -98,6 +98,9 @@ public class NotePlayerSynced : MonoBehaviour
         if (now >= targetTime)
         {
             int currentNoteIndex = targetStep % melody.Length;
+            //Debug.Log(currentNoteIndex);
+            string temp = ConvertToP(currentNoteIndex);
+            SerialPortManager.Instance.SendData(temp);
             int note = melody[currentNoteIndex];
             if (note >= 0 && note < currentInstrument.Length)
             {
@@ -278,5 +281,11 @@ public class NotePlayerSynced : MonoBehaviour
     public void UpdateDebugGroup(int groupNum)
     {
         debugGroupText.text = debugCashingGroupText + groupNum;
+    }
+    string ConvertToP(int value)
+    {
+        // 0 ~ 31 → 1 ~ 32로 맞춤
+        int num = value + 1;
+        return "P" + num.ToString("D2");
     }
 }
