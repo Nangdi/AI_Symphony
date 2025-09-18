@@ -98,6 +98,7 @@ public class NotePlayerSynced : MonoBehaviour
         if (now >= targetTime)
         {
             int currentNoteIndex = targetStep % melody.Length;
+            currentNoteIndex = currentNoteIndex % 4;
             //Debug.Log(currentNoteIndex);
             string temp = ConvertToP(currentNoteIndex);
             SerialPortManager.Instance.SendData(temp);
@@ -156,7 +157,7 @@ public class NotePlayerSynced : MonoBehaviour
     public void UpdateSubmelody(int[] melody)
     {
         var label = MelodyClassifier.MelodyClassifier96.Classify(melody );
-        Debug.Log($"Label: {label.Subtype}, Family: {label.Family}");
+        //Debug.Log($"Label: {label.Subtype}, Family: {label.Family}");
         if (uITextManager != null) //메인 notePlayer에게만 할당했음 나머지 서브들은 null
         {
 
@@ -172,7 +173,7 @@ public class NotePlayerSynced : MonoBehaviour
         int[] thirdMelod = GetHamony(melody, tempAraay);
         ChangeMelody(subPlayer, tempAraay);
         ChangeMelody(thirdPlayer, thirdMelod);
-        Debug.Log("SubMelody: [" + string.Join(",", tempAraay) + "]");
+        //Debug.Log("SubMelody: [" + string.Join(",", tempAraay) + "]");
     }
     //서브멜로디 교체메소드
     public void ChangeMelody(NotePlayerSynced player, int[] newMelody)

@@ -92,6 +92,7 @@ public class SerialPortManager : MonoBehaviour
         {
 
             string input = serialPort.ReadExisting(); // 데이터 읽기
+            //Debug.Log($"필터 전 : {input}");
             if (!string.IsNullOrEmpty(input))
             {
                 serialBuffer.Append(input); // (1)
@@ -99,7 +100,7 @@ public class SerialPortManager : MonoBehaviour
                 string processed = TryGetCompleteMessage(serialBuffer.ToString()); // (2)
                 if (processed != null) // (3)
                 {
-                    Debug.Log("완전한 데이터 수신: " + processed); // (4)
+                    //Debug.Log("완전한 데이터 수신: " + processed); // (4)
                     serialBuffer.Clear(); // (5)
                 }
                 return processed;
@@ -134,7 +135,7 @@ public class SerialPortManager : MonoBehaviour
             try
             {
                 serialPort.WriteLine(message); // 메시지 송신 (줄 바꿈 추가)
-                //Debug.Log("Sent: " + message);
+                Debug.Log("Sent: " + message);
             }
             catch (System.Exception ex)
             {
@@ -170,8 +171,29 @@ public class SerialPortManager : MonoBehaviour
         }
 
     }
-   
 
+    private StringBuilder receiveBuffer = new StringBuilder();
+    public void OnSerialData(string dataChunk)
+    {
+        // 새로 들어온 조각을 버퍼에 추가
+        receiveBuffer.Append(dataChunk);
+
+        while (true)
+        {
+            int newlineIndex = receiveBuffer.ToString().IndexOf('\r');
+            if (newlineIndex < 0)
+                break; // 아직 완전한 메시지가 없음
+
+            // 완전한 한 줄 추출
+            string complete = receiveBuffer.ToString(0, newlineIndex).Trim();
+
+            // 처리 (큐에 넣거나 이벤트로 넘김)
+            ReceivedData(complete);
+
+            // 버퍼에서 사용한 부분 제거
+            receiveBuffer.Remove(0, newlineIndex + 1);
+        }
+    }
 
 
 
