@@ -19,7 +19,7 @@ public class NotePlayerSynced : MonoBehaviour
     [SerializeField] private ButtonGroupSelector[] buttonGroupSelectors;
     [SerializeField] private NotePlayerSynced subPlayer;
     [SerializeField] private NotePlayerSynced thirdPlayer;
-
+    [SerializeField] private InstancedCubeSea cubeSea;
     [Header("Role")]
     public NotePlayerRole role;
     [Header("Pattern")]
@@ -146,6 +146,7 @@ public class NotePlayerSynced : MonoBehaviour
                 // 8번째까지 예약이 끝난 시점
                 UpdateDebugGroup(groupIndx);
                 UpdateSubmelody(tempAraay);
+                cubeSea.OnNotePlayed(targetStep % melody.Length, note);
             }
             lastScheduledStep = targetStep;
 
