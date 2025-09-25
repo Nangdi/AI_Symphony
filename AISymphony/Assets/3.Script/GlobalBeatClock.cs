@@ -12,7 +12,7 @@ public class GlobalBeatClock : MonoBehaviour
     [Range(1, 4)] public int division = 1; // 1=1/4, 2=1/8, 4=1/16
 
     //[Header("Clock")]
-    public double startDspTime { get; private set; }
+    public double startDspTime { get;  set; }
     public double intervalSec { get; private set; } // 1 division ±Ê¿Ã
 
     private double beatLength;

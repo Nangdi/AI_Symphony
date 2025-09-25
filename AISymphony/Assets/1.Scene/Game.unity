@@ -1937,6 +1937,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
         type: 3}
+      propertyPath: freqZ
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
       propertyPath: gridX
       value: 240
       objectReference: {fileID: 0}
@@ -1947,18 +1952,73 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
         type: 3}
+      propertyPath: speedZ
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
       propertyPath: spacing
-      value: 0.25
+      value: 0.125
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: baseSize
+      value: 0.11
       objectReference: {fileID: 0}
     - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
         type: 3}
       propertyPath: cubeMesh
       value: 
-      objectReference: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: hueRange
+      value: 0.37174216
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: hueSpeed
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: amplitude
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: centerHue
+      value: 0.5840926
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: valueBase
+      value: 0.14642681
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: barUpSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: pulseDecay
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: barDownSpeed
+      value: 2.95
+      objectReference: {fileID: 0}
     - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
         type: 3}
       propertyPath: pulseScaleMax
       value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
+        type: 3}
+      propertyPath: pulseRiseSpeed
+      value: 8.18
       objectReference: {fileID: 0}
     - target: {fileID: 2891655504783311771, guid: 0439ea03a6418344786bb87c38e9f1c3,
         type: 3}
@@ -1969,7 +2029,7 @@ PrefabInstance:
         type: 3}
       propertyPath: instancedMaterial
       value: 
-      objectReference: {fileID: 2100000, guid: 43f8d21b221411842bb038beb2ea311f, type: 2}
+      objectReference: {fileID: 2100000, guid: bdb11af5b0a3ec541bb3304808669a8a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3345,7 +3405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1291822674
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3751,6 +3811,11 @@ PrefabInstance:
       propertyPath: cubeSea
       value: 
       objectReference: {fileID: 1533827120}
+    - target: {fileID: 4688951016350972051, guid: c77f29e45c11e5b45bf87cff6d229571,
+        type: 3}
+      propertyPath: playMode
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4688951016350972051, guid: c77f29e45c11e5b45bf87cff6d229571,
         type: 3}
       propertyPath: subPlayer
