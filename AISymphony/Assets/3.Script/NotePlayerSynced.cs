@@ -143,31 +143,41 @@ public class NotePlayerSynced : MonoBehaviour
             }
 
         }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            playMode = PlayMode.Rhythm;
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            playMode = PlayMode.Melody;
+
+        }
     }
     void PlayRhythmStep()
     {
         int targetStep = lastScheduledStep + 1;
         int note = melody[targetStep % melody.Length];
         ScheduleNote(note, nextEventTime);
-       
+
         lastScheduledStep = targetStep;
         nextEventTime += clock.intervalSec;
     }
     int[] melodyFlight = {
-   2,1,0,3,2,1,0,3,4,6,5,4,3,2,1,0,7,6,5,4,3,2,1,0,
- 4,2,3,5,4,2,3,5,6,0,7,6,5,4,3,2,1,0,2,1,0,3,2,1,0,
- 5,2,3,5,4,2,3,5,4,6,5,4,3,2,1,0,7,6,5,4,3,2,1,0
+   9,8,7,6,5,4,5,6,
+9,7,8,9,8,7,8,6,7,8,9,8,7,6,7,5,6,7,
+2,3,4,5,4,3,4,7,6,7,5,7,6,5,4,3,4,3,
+2,3,4,5,6,7,5,7,6,7,6,7,6,4,5,6,7,8,9,
+10,11,9,10,11,9,10,11,4,5,6,7,8,9,10,
+9,7,8,9,2,3,4,5,4,3,4,7,6,7
 };
     float[] rhythmFlight = {
-    2,2,2,2,2,2,2,2,
-    1,0.5f,0.5f,1,0.5f,0.5f,0.5f,0.5f,
-    0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1,0.5f,0.5f,1,0.5f,0.5f,0.5f,0.5f,
-    0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,1,0.5f,
-    0.5f,1,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    0.5f,0.5f,0.5f,0.5f,1,0.5f,0.5f,1,
-    0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    0.5f,0.5f,0.5f,0.5f,0.5f,0.5f
+     4f,4f,4f,4f,4f,4f,4f,4f,
+    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
+    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
+    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
+    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
+    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
+    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
 };
     int melodyIndex = 0;
     void PlayMelodyStep()
@@ -175,7 +185,8 @@ public class NotePlayerSynced : MonoBehaviour
         int targetStep = lastScheduledStep + 1;
         int note = melodyFlight[targetStep % melodyFlight.Length];
         float length = rhythmFlight[targetStep % rhythmFlight.Length];
-
+        Debug.Log(melodyFlight.Length);
+        Debug.Log(rhythmFlight.Length);
         ScheduleNote(note, nextEventTime);
         lastScheduledStep = targetStep;
         bpm = clock.bpm;
@@ -191,7 +202,7 @@ public class NotePlayerSynced : MonoBehaviour
         //}
     }
     void ScheduleNote(int note, double when)
-    {
+    { 
         if (note < 0 || note >= currentInstrument.Length) return;
 
         currenAudio = audioPool[poolIndex % audioPool.Length];
@@ -357,7 +368,7 @@ public class NotePlayerSynced : MonoBehaviour
         {
             temp[i] = MelodyClassifier.GenerateOneHarmonyNote(main[i], sub[i]);
         }
-        Debug.Log(temp);
+        //Debug.Log(temp);
         return temp;
        
     }

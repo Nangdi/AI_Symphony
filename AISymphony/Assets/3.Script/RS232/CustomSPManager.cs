@@ -14,10 +14,10 @@ public class CustomSPManager : SerialPortManager
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            ReceivedData("D1423");
-        }
+        //if (Input.GetKeyDown(KeyCode.Q))
+        //{
+        //    ReceivedData("D1423");
+        //}
     }
     protected override void Start()
     {

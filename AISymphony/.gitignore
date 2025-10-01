@@ -70,3 +70,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Nebula Skyboxes Cubemap 무시
+Assets/Nebula Skyboxes/Nebula_01_Cubemap.exr
+Assets/Nebula Skyboxes/Nebula_02_Cubemap.exr
+Assets/Nebula Skyboxes/Nebula_03_Cubemap.exr
+Assets/Nebula Skyboxes/Nebula_04_Cubemap.exr

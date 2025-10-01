@@ -30,8 +30,8 @@ Material:
     - _BandDownSpeed: 1.6
     - _BandUpSpeed: 2.4
     - _BandWidth: 0.14
-    - _EmissionBoost: 1.4
-    - _HeightEmission: 1.5
+    - _EmissionBoost: 5.09
+    - _HeightEmission: 4.54
     - _PulseBandBoost: 4
     - _PulseBandSpeed: 2.6
     - _PulseBandWidth: 0.14
