@@ -768,6 +768,39 @@ public class MelodyClassifier : MonoBehaviour
         }
         return 4;
     }
+
 }
+    public static int GenerateOneHarmonyNote(int firstNote, int secondNote)
+    {
+        // 도=0, 레=1, ..., 시=6
+        Dictionary<int, int[]> triads = new Dictionary<int, int[]>()
+    {
+        { 0, new int[] {0, 2, 4} }, // C (도, 미, 솔)
+        { 1, new int[] {1, 3, 5} }, // Dm (레, 파, 라)
+        { 2, new int[] {2, 4, 6} }, // Em (미, 솔, 시)
+        { 3, new int[] {3, 5, 0} }, // F (파, 라, 도)
+        { 4, new int[] {4, 6, 1} }, // G (솔, 시, 레)
+        { 5, new int[] {5, 0, 2} }, // Am (라, 도, 미)
+        { 6, new int[] {6, 1, 3} }, // Bdim (시, 레, 파)
+    };
+
+        int root = firstNote % 7;
+        int[] baseTriad = triads[root];
+        int third = baseTriad[1]; // 3도
+        int fifth = baseTriad[2]; // 5도
+
+        // 두 번째 음이 화음 안에 포함돼 있다면 → 남은 음 반환
+        if (Array.IndexOf(baseTriad, secondNote % 7) >= 0)
+        {
+            foreach (var n in baseTriad)
+            {
+                if (n != root && n != secondNote % 7)
+                    return n;
+            }
+        }
+
+        // 포함되지 않았다면 → 항상 3도 반환
+        return third;
+    }
 
 }
