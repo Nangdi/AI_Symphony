@@ -21,6 +21,7 @@ public class NotePlayerSynced : MonoBehaviour
     [SerializeField] private NotePlayerSynced subPlayer;
     [SerializeField] private NotePlayerSynced thirdPlayer;
     [SerializeField] private InstancedCubeSea cubeSea;
+    [SerializeField] private MelodyEmotionAnalyzer emotionAnalyzer;
     [Header("Role")]
     public NotePlayerRole role;
     [Header("Pattern")]
@@ -140,7 +141,20 @@ public class NotePlayerSynced : MonoBehaviour
                 string temp = ConvertToP(currentNoteIndex);
                 SerialPortManager.Instance.SendData(temp);
                 cubeSea.OnNotePlayed(currentNoteIndex, note);
+
+
+                if(currentNoteIndex % 8 ==0)
+                {
+                    for (int i = 0; i < tempAraay.Length; i++)
+                    {
+                        tempAraay[i] = melody[i + (8 * groupIndx)];
+                    }
+                    emotionAnalyzer.AnalyzeEmotion(tempAraay);
+                }
             }
+            //마디 넘어가는 타이밍 잡기
+            //8마디 분석 스크립트로 넘기기
+            //이모션분석후  cubeSea 색상 바꾸기
 
         }
         if (Input.GetKeyDown(KeyCode.Q))
@@ -330,7 +344,7 @@ public class NotePlayerSynced : MonoBehaviour
     }
     public void ResetOctaveOption(int index)
     {
-        Debug.Log(index);
+        UnityEngine.Debug.Log(index);
         octaveDropdown.ClearOptions();
         octaveDropdown.AddOptions(new List<string> { "3 octave", "4 octave" });
         octaveDropdown.value = 0;

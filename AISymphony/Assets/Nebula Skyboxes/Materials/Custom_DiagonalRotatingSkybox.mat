@@ -31,5 +31,5 @@ Material:
     m_Floats:
     - _RotationSpeed: 0.02
     m_Colors:
-    - _Axis: {r: -1.25, g: 1, b: 0, a: 0}
+    - _Axis: {r: -3, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
