@@ -48,7 +48,7 @@ public class NotePlayerSynced : MonoBehaviour
 
     public PlayMode playMode = PlayMode.Rhythm;
 
-
+    
     public int octave = 1;
 
     // 🔹 싱크 관련
@@ -149,7 +149,8 @@ public class NotePlayerSynced : MonoBehaviour
                     {
                         tempAraay[i] = melody[i + (8 * groupIndx)];
                     }
-                    emotionAnalyzer.AnalyzeEmotion(tempAraay);
+                    var emotion = emotionAnalyzer.AnalyzeEmotion(tempAraay);
+                    cubeSea.UpdateEmotionInfluence(emotion.colorEmotion, emotion.speedEmotion);
                 }
             }
             //마디 넘어가는 타이밍 잡기

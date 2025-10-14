@@ -123,7 +123,8 @@ public class InstancedCubeSea : MonoBehaviour
     static readonly int EmissionColorID = Shader.PropertyToID("_EmissionColor");
 
     static float N2(float x, float y) => Mathf.PerlinNoise(x, y);
-
+    float targetSpeed = 0;
+    float targetColor = 0;
     void Awake()
     {
         if (!cubeMesh || !instancedMaterial) { Debug.LogError("cubeMesh / instancedMaterial 미할당"); enabled = false; return; }
@@ -304,7 +305,8 @@ public class InstancedCubeSea : MonoBehaviour
 
             if (barIntensity <= 0.001f) lastCenterIdx = -1; // 수명 종료
         }
-
+        //speedX = Mathf.Lerp(speedX, targetSpeed, Time.deltaTime * 2f);
+        centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime * 2f);
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -476,5 +478,33 @@ public class InstancedCubeSea : MonoBehaviour
 
         return col;
     }
-
+    public void UpdateEmotionInfluence(string colorEmotion , string speedEmotion)
+    {
+        //TechPalette.centerHue
+        //기쁨 - 0.1~0.2
+        //슬픔 - 0.5~0.6
+        //Wave.speedX
+        //안정 - 3 
+        //화남 - 7
+      
+        switch (colorEmotion)
+        {
+            case "happy":
+                targetColor = Random.Range(0.1f, 0.2f);
+                break;
+            case "sad":
+                targetColor = Random.Range(0.5f, 0.6f);
+                break;
+        }
+        switch (speedEmotion)
+        {
+            case "angry":
+                targetSpeed = 7;
+                break;
+            case "calm":
+                targetSpeed = 3;
+                break;
+        }
+        speedX = targetSpeed;
+    }
 }

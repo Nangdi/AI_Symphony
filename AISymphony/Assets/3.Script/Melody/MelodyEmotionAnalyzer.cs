@@ -8,7 +8,7 @@ public class MelodyEmotionAnalyzer : MonoBehaviour
     int upLife, downLife =0;
 
     float happyScore, sadScore, calmScore,angryScore = 0;
-    public void AnalyzeEmotion(int[] notes)
+    public (string colorEmotion, string speedEmotion) AnalyzeEmotion(int[] notes)
     {
 
         JudgmentScore(notes);
@@ -23,8 +23,8 @@ public class MelodyEmotionAnalyzer : MonoBehaviour
         //안정 - 3 
         //화남 - 7
 
-
         ResetScore();
+        return emotion;
     }
     public void JudgmentScore(int[] notes)
     {
