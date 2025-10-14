@@ -16,6 +16,12 @@ public class MelodyEmotionAnalyzer : MonoBehaviour
         Debug.Log($"happyScore : {happyScore} , sadScore : {sadScore} ,calmScore : {calmScore}, ,angry : {angryScore}" );
         var emotion = GetEmotionResults(happyScore, sadScore, calmScore, angryScore);
         Debug.Log($"Color: {emotion.colorEmotion}, Speed: {emotion.speedEmotion}");
+        //TechPalette.CenterHue
+        //기쁨 - 0.1~0.2
+        //슬픔 - 0.5~0.6
+        //Wave.SpeedX
+        //안정 - 3 
+        //화남 - 7
 
 
         ResetScore();
