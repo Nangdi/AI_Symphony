@@ -128,14 +128,14 @@ public class InstancedCubeSea : MonoBehaviour
     float targetColor = 0;
     void Start()
     {
-        Vector2Int temp = JsonManager.instance.gameSettingData.gridVec2;
-        gridX = temp.x;
-        gridZ = temp.y;
+        int temp = JsonManager.instance.gameSettingData.grid;
+        gridX = temp;
+        gridZ = (temp/15) *4;
         // 0.003125
         // 0.00275
         // 300 0.2 / 80 0.22 1.5    
-        spacing = (300f / temp.x) * spacing;
-        baseSize = (80f / temp.y) * baseSize;
+        spacing = (300f / gridX) * spacing;
+        baseSize = (80f / gridZ) * baseSize;
 
 
         if (!cubeMesh || !instancedMaterial) { Debug.LogError("cubeMesh / instancedMaterial 미할당"); enabled = false; return; }
@@ -317,7 +317,7 @@ public class InstancedCubeSea : MonoBehaviour
             if (barIntensity <= 0.001f) lastCenterIdx = -1; // 수명 종료
         }
         //speedX = Mathf.Lerp(speedX, targetSpeed, Time.deltaTime * 2f);
-        centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime );
+        //centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime*0.5f );
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -501,10 +501,10 @@ public class InstancedCubeSea : MonoBehaviour
         switch (colorEmotion)
         {
             case "happy":
-                targetColor = Random.Range(0.1f, 0.2f);
+                targetColor = Random.Range(0.07f, 0.24f);
                 break;
             case "sad":
-                targetColor = Random.Range(0.5f, 0.6f);
+                targetColor = Random.Range(0.58f, 0.63f);
                 break;
         }
         switch (speedEmotion)
