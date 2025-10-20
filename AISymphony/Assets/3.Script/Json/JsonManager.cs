@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 public class GameSettingData
 {
+    public Vector2Int gridVec2=new Vector2Int( 300 ,80);
 }
 public class PortJson
 {

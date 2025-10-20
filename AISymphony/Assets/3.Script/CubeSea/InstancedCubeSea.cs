@@ -28,6 +28,7 @@ public class InstancedCubeSea : MonoBehaviour
     [Header("Grid")]
     public int gridX = 160;
     public int gridZ = 80;
+  
     public float spacing = 0.5f;
     public float baseSize = 0.22f;
 
@@ -125,8 +126,18 @@ public class InstancedCubeSea : MonoBehaviour
     static float N2(float x, float y) => Mathf.PerlinNoise(x, y);
     float targetSpeed = 0;
     float targetColor = 0;
-    void Awake()
+    void Start()
     {
+        Vector2Int temp = JsonManager.instance.gameSettingData.gridVec2;
+        gridX = temp.x;
+        gridZ = temp.y;
+        // 0.003125
+        // 0.00275
+        // 300 0.2 / 80 0.22 1.5    
+        spacing = (300f / temp.x) * spacing;
+        baseSize = (80f / temp.y) * baseSize;
+
+
         if (!cubeMesh || !instancedMaterial) { Debug.LogError("cubeMesh / instancedMaterial 미할당"); enabled = false; return; }
         instancedMaterial.enableInstancing = true;
 
@@ -306,7 +317,7 @@ public class InstancedCubeSea : MonoBehaviour
             if (barIntensity <= 0.001f) lastCenterIdx = -1; // 수명 종료
         }
         //speedX = Mathf.Lerp(speedX, targetSpeed, Time.deltaTime * 2f);
-        centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime * 2f);
+        centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime );
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Q))
         {

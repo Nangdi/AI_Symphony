@@ -105,6 +105,7 @@ public class NotePlayerSynced : MonoBehaviour
         // 예약할 시간이 됐는지 체크
         if (now >= nextEventTime)
         {
+            
             int targetStep = lastScheduledStep + 1;
             int currentNoteIndex = targetStep % melody.Length;
            
@@ -219,7 +220,7 @@ public class NotePlayerSynced : MonoBehaviour
     void ScheduleNote(int note, double when)
     { 
         if (note < 0 || note >= currentInstrument.Length) return;
-
+        Debug.Log($"role {role} 연주함");
         currenAudio = audioPool[poolIndex % audioPool.Length];
         currenAudio.clip = currentInstrument[note + (7 * (octave - 1))];
         currenAudio.PlayScheduled(when);
