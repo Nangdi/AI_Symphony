@@ -27,7 +27,8 @@ public class NotePlayerSynced : MonoBehaviour
     public NotePlayerRole role;
     [Header("Pattern")]
     public int[] melody;
-
+    public float[] divisions;
+    public float[] volumes;
     [Header("Tempo")]
     public float bpm = 120f;
     [Range(1, 4)] public int division = 1; // 1=1/4, 2=1/8, 4=1/16
