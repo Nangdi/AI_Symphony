@@ -317,7 +317,7 @@ public class InstancedCubeSea : MonoBehaviour
             if (barIntensity <= 0.001f) lastCenterIdx = -1; // 수명 종료
         }
         //speedX = Mathf.Lerp(speedX, targetSpeed, Time.deltaTime * 2f);
-        //centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime*0.5f );
+        centerHue = Mathf.Lerp(centerHue, targetColor, Time.deltaTime * 0.5f);
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Q))
         {

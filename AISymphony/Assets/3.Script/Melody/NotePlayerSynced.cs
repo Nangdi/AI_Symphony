@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -173,7 +172,7 @@ public class NotePlayerSynced : MonoBehaviour
             UpdateSubmelody(tempAraay);
             string temp = ConvertToP(currentIndex);
             SerialPortManager.Instance.SendData(temp);
-            Debug.Log($"currentNote : {currentNote} , Pos : {currentIndex} ");
+            //Debug.Log($"currentNote : {currentNote} , Pos : {currentIndex} ");
             cubeSea.OnNotePlayed(step % melody.Length, currentNote);
             if (currentIndex % 8 == 0)
             {
@@ -219,6 +218,7 @@ public class NotePlayerSynced : MonoBehaviour
         }
 
         double now = AudioSettings.dspTime;
+        clock = GlobalBeatClock.I;
         nextEventTime = now + clock.intervalSec;
         poolIndex = 0;
     }
