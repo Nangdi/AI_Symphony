@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -58,7 +59,10 @@ public class NotePlayerSynced : MonoBehaviour
     private int lastScheduledStep = -1;
     private double nextEventTime = 0.0;   // ✅ 다음 예약할 DSP 시간
 
-
+    int[] melodyFlight = new int[32];
+    float[] rhythmFlight = new float[32];
+    float[] volumFlight = new float[32];
+    int melodyIndex = 0;
     //Test
     float currentTime;
     private void Awake()
@@ -91,37 +95,35 @@ public class NotePlayerSynced : MonoBehaviour
         toggle.onValueChanged.AddListener(OnToggleChanged);
         currentTime = bpm;
 
-      
+            MelodyData data = instrumentsStore.datas[8];
+            volumFlight = data.strongys;
+        if (role == NotePlayerRole.Main)
+        {
+            rhythmFlight = data.tempos;
+            //melody = data.notes;
+            SetBPM(data.bpm);
+        }
+
+    }
+    public void PreSet(int index)
+    {
+        MelodyData data = instrumentsStore.datas[index];
+        rhythmFlight = data.tempos;
+        volumFlight = data.strongys;
+        melody = data.notes;
+        SetBPM(data.bpm);
     }
 
-   
     void PlayRhythmStep()
     {
         int targetStep = lastScheduledStep + 1;
         int note = melody[targetStep % melody.Length];
-        ScheduleNote(note, nextEventTime);
+        ScheduleNote(note, nextEventTime ,targetStep);
 
         lastScheduledStep = targetStep;
         nextEventTime += clock.intervalSec;
     }
-    int[] melodyFlight = {
-   9,8,7,6,5,4,5,6,
-9,7,8,9,8,7,8,6,7,8,9,8,7,6,7,5,6,7,
-2,3,4,5,4,3,4,7,6,7,5,7,6,5,4,3,4,3,
-2,3,4,5,6,7,5,7,6,7,6,7,6,4,5,6,7,8,9,
-10,11,9,10,11,9,10,11,4,5,6,7,8,9,10,
-9,7,8,9,2,3,4,5,4,3,4,7,6,7
-};
-    float[] rhythmFlight = {
-     4f,4f,4f,4f,4f,4f,4f,4f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-};
-    int melodyIndex = 0;
+ 
     void PlayMelodyStep()
     {
         int targetStep = lastScheduledStep + 1;
@@ -129,7 +131,7 @@ public class NotePlayerSynced : MonoBehaviour
         float length = rhythmFlight[targetStep % rhythmFlight.Length];
         Debug.Log(melodyFlight.Length);
         Debug.Log(rhythmFlight.Length);
-        ScheduleNote(note, nextEventTime);
+        ScheduleNote(note, nextEventTime ,targetStep);
         lastScheduledStep = targetStep;
         bpm = clock.bpm;
         double quarterNoteSec = 60.0 / bpm;   // 1박자(4분음표) 길이
@@ -148,7 +150,21 @@ public class NotePlayerSynced : MonoBehaviour
         if (!toggle.isOn || currentInstrument == null) return;
 
         int currentIndex = step % melody.Length;
-        int currentNote = melody[currentIndex];
+        int currentNote;
+            currentNote = melody[currentIndex];
+        //if (playMode == PlayMode.Rhythm)
+        //{
+        //}
+        //else
+        //{
+        //    currentNote = melodyFlight[currentIndex];
+        //}
+        double quarterNoteSec = 60.0 / bpm;
+        float length = rhythmFlight[step % rhythmFlight.Length];
+        GlobalBeatClock.I.RecalculateInterval(rhythmFlight[currentIndex]);
+        Debug.Log($"step : {step} , length : {length}, when : {when}, quarter : {quarterNoteSec}");
+        //when += quarterNoteSec* length;
+
         //if (noteIndex < 0 || noteIndex >= currentInstrument.Length) return; 
 
         // 메인 노트 재생
@@ -195,11 +211,21 @@ public class NotePlayerSynced : MonoBehaviour
     //    currenAudio.PlayScheduled(when);
     //    poolIndex++;
     //}
-    void ScheduleNote(int note, double when)
+    void ScheduleNote(int note, double when, int step)
     {
         var source = audioPool[poolIndex % audioPool.Length];
         int clipIndex = note + (7 * (octave - 1));
         source.clip = currentInstrument[Mathf.Clamp(clipIndex, 0, currentInstrument.Length - 1)];
+        if (role == NotePlayerRole.Sub)
+        {
+            source.volume = volumFlight[step % 32] / 2;
+
+        }
+        else
+        {
+
+            source.volume = volumFlight[step % 32];
+        }
         source.PlayScheduled(when);
         poolIndex++;
     }
@@ -207,7 +233,7 @@ public class NotePlayerSynced : MonoBehaviour
     {
         int noteIndex = melody[step % melody.Length];
         if (noteIndex < 0 || noteIndex >= currentInstrument.Length) return;
-        ScheduleNote(noteIndex, when);
+        ScheduleNote(noteIndex, when, step);
         //Debug.Log($"step : {step % melody.Length}");
     }
     public void OnBPMChanged()

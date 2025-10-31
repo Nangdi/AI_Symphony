@@ -11,6 +11,7 @@ public class GlobalBeatClock : MonoBehaviour
     public float bpm = 120f;
     public TMP_InputField bpmInput;
     [Range(1, 4)] public int division = 1; // 1=1/4, 2=1/8, 4=1/16
+    public float[] divsions = new float[32];
     public float beatLength;
     public double startDspTime { get; private set; }
     public double intervalSec { get; private set; }
@@ -55,6 +56,7 @@ public class GlobalBeatClock : MonoBehaviour
     // BPM 관리
     // ──────────────────────────────────────────────
     void RecalculateInterval() => intervalSec = (60.0 / bpm) / division;
+    public void RecalculateInterval(float division) => intervalSec = (60.0 / bpm) * division;
 
     public void SetTempo(float newBpm)
     {
