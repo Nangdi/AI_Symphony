@@ -1,3 +1,4 @@
+ï»¿using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -7,66 +8,86 @@ public class GlobalBeatClock : MonoBehaviour
     public static GlobalBeatClock I { get; private set; }
 
     [Header("Tempo")]
-    public float bpm = 240f;
+    public float bpm = 120f;
     public TMP_InputField bpmInput;
     [Range(1, 4)] public int division = 1; // 1=1/4, 2=1/8, 4=1/16
+    public float[] divsions = new float[32];
+    public float beatLength;
+    public double startDspTime { get; private set; }
+    public double intervalSec { get; private set; }
 
-    //[Header("Clock")]
-    public double startDspTime { get;  set; }
-    public double intervalSec { get; private set; } // 1 division ±æÀÌ
+    public event Action<double, int> OnBeatStep; // ğŸ”¹ DSP ì´ë²¤íŠ¸ ë°œìƒ ì‹œ ì „ë‹¬
+    public List<NotePlayerSynced> players = new List<NotePlayerSynced>();
 
-    private double beatLength;
-
-    public List<NotePlayerSynced> players;
+    private int stepCounter = 0;
+    private double nextEventTime = 0.0;
 
     void Awake()
     {
         if (I != null && I != this) { Destroy(gameObject); return; }
         I = this;
         DontDestroyOnLoad(gameObject);
-        bpmInput.onEndEdit.AddListener(OnBPMChanged);
 
+        if (bpmInput != null)
+            bpmInput.onEndEdit.AddListener(OnBPMInputChanged);
     }
 
     void Start()
     {
-        Recalc();
-        // ¸ğµç ÇÃ·¹ÀÌ¾î°¡ °øÅë ±âÁØÀ» °®µµ·Ï ¾à°£ µÚ¿¡ ½ÃÀÛ
-        startDspTime = AudioSettings.dspTime + 0.3;
+        RecalculateInterval();
+        startDspTime = AudioSettings.dspTime + 0.3; // ì•½ê°„ ë”œë ˆì´ í›„ ì‹œì‘
+        nextEventTime = startDspTime;
     }
 
-    void Recalc() => intervalSec = (60.0 / bpm) / division;
+    void Update()
+    {
+        double now = AudioSettings.dspTime;
+
+        // FPSì™€ ê´€ê³„ì—†ì´ DSPì‹œê°„ ê¸°ì¤€ìœ¼ë¡œ ì˜ˆì•½ ì§„í–‰
+        if (now + 0.05 >= nextEventTime) // 50ms lookahead
+        {
+            OnBeatStep?.Invoke(nextEventTime, stepCounter);
+            stepCounter++;
+            nextEventTime += intervalSec;
+        }
+    }
+
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // BPM ê´€ë¦¬
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    void RecalculateInterval() => intervalSec = (60.0 / bpm) / division;
+    public void RecalculateInterval(float division) => intervalSec = (60.0 / bpm) * division;
 
     public void SetTempo(float newBpm)
     {
-        // ÁøÇà À§Ä¡(phase) À¯Áö
         double now = AudioSettings.dspTime;
-        double songPos = now - startDspTime; // ÃÊ
-        bpm = newBpm;
-        //division = Mathf.Clamp(newDivision, 1, 4);
-        Recalc();
-        startDspTime = now - songPos;
-        foreach (var item in players)
-        {
-            item.OnBPMChanged();
-        }
+        double songPos = now - startDspTime;
+        bpm = Mathf.Max(10f, newBpm); // ìµœì†Œ ì œí•œ
+        RecalculateInterval();
+        startDspTime = now - songPos; // ìœ„ìƒ ìœ ì§€
+        nextEventTime = now + intervalSec;
+        //stepCounter = 0;
+
+        // ğŸ”¹ ëª¨ë“  í”Œë ˆì´ì–´ í ë¦¬ì…‹
+        foreach (var p in players)
+            p.OnBPMChanged();
     }
-    private void OnBPMChanged(string value)
+
+    private void OnBPMInputChanged(string value)
     {
         if (float.TryParse(value, out float newBpm))
-        {
             SetTempo(newBpm);
-        }
         else
-        {
-            Debug.LogWarning("BPM ÀÔ·ÂÀÌ ¿Ã¹Ù¸£Áö ¾Ê½À´Ï´Ù.");
-        }
+            Debug.LogWarning("âš  BPM ì…ë ¥ê°’ì´ ì˜¬ë°”ë¥´ì§€ ì•ŠìŠµë‹ˆë‹¤.");
     }
-    public double Now => AudioSettings.dspTime;
-    public double SongPosSec => Now - startDspTime;
-    public double SongPosTicks => SongPosSec / intervalSec; // division ´ÜÀ§ ÁøÇà
 
-    // Áö±İ ½ÃÁ¡ ±âÁØ, nÆ½ ´ÜÀ§ °İÀÚ¿¡ '´ÙÀ½'À¸·Î ¾çÀÚÈ­µÈ DSP ½Ã°¢À» µ¹·ÁÁÜ
+
+
+public double Now => AudioSettings.dspTime;
+    public double SongPosSec => Now - startDspTime;
+    public double SongPosTicks => SongPosSec / intervalSec; // division ë‹¨ìœ„ ì§„í–‰
+
+    // ì§€ê¸ˆ ì‹œì  ê¸°ì¤€, ní‹± ë‹¨ìœ„ ê²©ìì— 'ë‹¤ìŒ'ìœ¼ë¡œ ì–‘ìí™”ëœ DSP ì‹œê°ì„ ëŒë ¤ì¤Œ
     public double NextQuantizedTime(int tickMultiple = 1)
     {
         double ticks = SongPosTicks;

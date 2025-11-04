@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +28,8 @@ public class NotePlayerSynced : MonoBehaviour
     public NotePlayerRole role;
     [Header("Pattern")]
     public int[] melody;
-
+    public float[] divisions;
+    public float[] volumes;
     [Header("Tempo")]
     public float bpm = 120f;
     [Range(1, 4)] public int division = 1; // 1=1/4, 2=1/8, 4=1/16
@@ -56,9 +59,13 @@ public class NotePlayerSynced : MonoBehaviour
     private int lastScheduledStep = -1;
     private double nextEventTime = 0.0;   // ✅ 다음 예약할 DSP 시간
 
-
+    int[] melodyFlight = new int[32];
+    float[] rhythmFlight = new float[32];
+    float[] volumFlight = new float[32];
+    int melodyIndex = 0;
     //Test
     float currentTime;
+    int instrumentPresetNum;
     private void Awake()
     {
         melody = new int[buttonGroupSelectors.Length];
@@ -81,7 +88,7 @@ public class NotePlayerSynced : MonoBehaviour
             enabled = false;
             return;
         }
-
+        clock.OnBeatStep += HandleBeatStep;
         bpm = clock.bpm;
         division = clock.division;
 
@@ -89,113 +96,57 @@ public class NotePlayerSynced : MonoBehaviour
         toggle.onValueChanged.AddListener(OnToggleChanged);
         currentTime = bpm;
 
-      
+            MelodyData data = instrumentsStore.datas[8];
+            volumFlight = data.strongys;
+        if (role == NotePlayerRole.Main)
+        {
+            rhythmFlight = data.tempos;
+            //melody = data.notes;
+            SetBPM(data.bpm);
+        }
+
     }
-
-    void Update()
+    public void PreSet(int index)
     {
-        if (!toggle.isOn || currentInstrument == null || audioPool.Length == 0 || role.Equals(NotePlayerRole.Sub)) return;
-
-        double now = AudioSettings.dspTime;
-
-        // 아직 예약 시작 안 했으면 첫 예약 시점 설정
-        if (nextEventTime <= 0)
-            nextEventTime = now + clock.intervalSec;
-
-        // 예약할 시간이 됐는지 체크
-        if (now >= nextEventTime)
+        MelodyData data = instrumentsStore.datas[index];
+        rhythmFlight = data.tempos;
+        volumFlight = data.strongys;
+        melody = data.notes;
+        SetBPM(data.bpm);
+    }
+    public void MusicalInstrumentPreSet()
+    {
+        instrumentPresetNum++;
+        switch (instrumentPresetNum)
         {
-            
-            int targetStep = lastScheduledStep + 1;
-            int currentNoteIndex = targetStep % melody.Length;
-           
-
-            int note = melody[currentNoteIndex];
-            if (note >= 0 && note < currentInstrument.Length)
-            {
-                if (playMode == PlayMode.Rhythm)
-                    PlayRhythmStep();
-                   
-                else if (playMode == PlayMode.Melody)
-                    PlayMelodyStep();
-            }
-            if (subPlayer.toggle.isOn)
-            {
-                subPlayer.PlaySubNote(nextEventTime);
-            }
-            if (thirdPlayer.toggle.isOn)
-            {
-                thirdPlayer.PlaySubNote(nextEventTime);
-
-            }
-
-            if (role == NotePlayerRole.Main)
-            {
-                int[] tempAraay = new int[8];
-                int groupIndx = buttonGroupSelectors[currentNoteIndex].groupNum;
-                for (int i = 0; i < tempAraay.Length; i++)
-                {
-                    tempAraay[i] = melody[i + (8 * groupIndx)] + 1;
-                }
-                UpdateDebugGroup(groupIndx);
-                UpdateSubmelody(tempAraay);
-                string temp = ConvertToP(currentNoteIndex);
-                SerialPortManager.Instance.SendData(temp);
-                cubeSea.OnNotePlayed(currentNoteIndex, note);
-
-
-                if(currentNoteIndex % 8 ==0)
-                {
-                    for (int i = 0; i < tempAraay.Length; i++)
-                    {
-                        tempAraay[i] = melody[i + (8 * groupIndx)];
-                    }
-                    var emotion = emotionAnalyzer.AnalyzeEmotion(tempAraay);
-                    cubeSea.UpdateEmotionInfluence(emotion.colorEmotion, emotion.speedEmotion);
-                }
-            }
-            //마디 넘어가는 타이밍 잡기
-            //8마디 분석 스크립트로 넘기기
-            //이모션분석후  cubeSea 색상 바꾸기
-
+            case 0:
+                currentInstrument = instrumentsStore.GetInstrument(13);
+                subPlayer.currentInstrument = instrumentsStore.GetInstrument(7);
+                thirdPlayer.currentInstrument = instrumentsStore.GetInstrument(12);
+                break;
+            case 1:
+                currentInstrument = instrumentsStore.GetInstrument(11);
+                subPlayer.currentInstrument = instrumentsStore.GetInstrument(12);
+                thirdPlayer.currentInstrument = instrumentsStore.GetInstrument(14);
+                break;
+            case 2:
+                currentInstrument = instrumentsStore.GetInstrument(2);
+                subPlayer.currentInstrument = instrumentsStore.GetInstrument(16);
+                thirdPlayer.currentInstrument = instrumentsStore.GetInstrument(7);
+                break;
         }
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            playMode = PlayMode.Rhythm;
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            playMode = PlayMode.Melody;
-
-        }
+      
     }
     void PlayRhythmStep()
     {
         int targetStep = lastScheduledStep + 1;
         int note = melody[targetStep % melody.Length];
-        ScheduleNote(note, nextEventTime);
+        ScheduleNote(note, nextEventTime ,targetStep);
 
         lastScheduledStep = targetStep;
         nextEventTime += clock.intervalSec;
     }
-    int[] melodyFlight = {
-   9,8,7,6,5,4,5,6,
-9,7,8,9,8,7,8,6,7,8,9,8,7,6,7,5,6,7,
-2,3,4,5,4,3,4,7,6,7,5,7,6,5,4,3,4,3,
-2,3,4,5,6,7,5,7,6,7,6,7,6,4,5,6,7,8,9,
-10,11,9,10,11,9,10,11,4,5,6,7,8,9,10,
-9,7,8,9,2,3,4,5,4,3,4,7,6,7
-};
-    float[] rhythmFlight = {
-     4f,4f,4f,4f,4f,4f,4f,4f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-    1f,0.5f,0.5f,1f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,0.5f,
-};
-    int melodyIndex = 0;
+ 
     void PlayMelodyStep()
     {
         int targetStep = lastScheduledStep + 1;
@@ -203,7 +154,7 @@ public class NotePlayerSynced : MonoBehaviour
         float length = rhythmFlight[targetStep % rhythmFlight.Length];
         Debug.Log(melodyFlight.Length);
         Debug.Log(rhythmFlight.Length);
-        ScheduleNote(note, nextEventTime);
+        ScheduleNote(note, nextEventTime ,targetStep);
         lastScheduledStep = targetStep;
         bpm = clock.bpm;
         double quarterNoteSec = 60.0 / bpm;   // 1박자(4분음표) 길이
@@ -217,22 +168,118 @@ public class NotePlayerSynced : MonoBehaviour
         //    playMode = PlayMode.Rhythm; // 곡 끝나면 다시 리듬모드
         //}
     }
-    void ScheduleNote(int note, double when)
-    { 
-        if (note < 0 || note >= currentInstrument.Length) return;
-        Debug.Log($"role {role} 연주함");
-        currenAudio = audioPool[poolIndex % audioPool.Length];
-        currenAudio.clip = currentInstrument[note + (7 * (octave - 1))];
-        currenAudio.PlayScheduled(when);
+    void HandleBeatStep(double when, int step)
+    {
+        if (!toggle.isOn || currentInstrument == null) return;
+
+        int currentIndex = step % melody.Length;
+        int currentNote;
+            currentNote = melody[currentIndex];
+        //if (playMode == PlayMode.Rhythm)
+        //{
+        //}
+        //else
+        //{
+        //    currentNote = melodyFlight[currentIndex];
+        //}
+        double quarterNoteSec = 60.0 / bpm;
+        float length = rhythmFlight[step % rhythmFlight.Length];
+        GlobalBeatClock.I.RecalculateInterval(rhythmFlight[currentIndex]);
+        Debug.Log($"step : {step} , length : {length}, when : {when}, quarter : {quarterNoteSec}");
+        //when += quarterNoteSec* length;
+
+        //if (noteIndex < 0 || noteIndex >= currentInstrument.Length) return; 
+
+        // 메인 노트 재생
+        PlaySubNote(when, step);
+
+        // Sub / Third도 같은 DSP 시간에 동기 예약
+        if (role == NotePlayerRole.Main)
+        {
+            if (subPlayer != null && subPlayer.toggle.isOn)
+                subPlayer.PlaySubNote(when, step);
+
+            if (thirdPlayer != null && thirdPlayer.toggle.isOn)
+                thirdPlayer.PlaySubNote(when, step);
+
+            int[] tempAraay = new int[8];
+            int groupIndx = buttonGroupSelectors[currentIndex].groupNum;
+            for (int i = 0; i < tempAraay.Length; i++)
+            {
+                tempAraay[i] = melody[i + (8 * groupIndx)] + 1;
+            }
+            UpdateDebugGroup(groupIndx);
+            UpdateSubmelody(tempAraay);
+            string temp = ConvertToP(currentIndex);
+            SerialPortManager.Instance.SendData(temp);
+            //Debug.Log($"currentNote : {currentNote} , Pos : {currentIndex} ");
+            cubeSea.OnNotePlayed(step % melody.Length, currentNote);
+            if (currentIndex % 8 == 0)
+            {
+                for (int i = 0; i < tempAraay.Length; i++)
+                {
+                    tempAraay[i] = melody[i + (8 * groupIndx)];
+                }
+                var emotion = emotionAnalyzer.AnalyzeEmotion(tempAraay);
+                cubeSea.UpdateEmotionInfluence(emotion.colorEmotion, emotion.speedEmotion);
+            }
+        }
+    }
+    //void ScheduleNote(int note, double when)
+    //{ 
+    //    if (note < 0 || note >= currentInstrument.Length) return;
+    //    Debug.Log($"role {role} 연주함");
+    //    currenAudio = audioPool[poolIndex % audioPool.Length];
+    //    currenAudio.clip = currentInstrument[note + (7 * (octave - 1))];
+    //    currenAudio.PlayScheduled(when);
+    //    poolIndex++;
+    //}
+    void ScheduleNote(int note, double when, int step)
+    {
+        var source = audioPool[poolIndex % audioPool.Length];
+        int clipIndex = note + (7 * (octave - 1));
+        source.clip = currentInstrument[Mathf.Clamp(clipIndex, 0, currentInstrument.Length - 1)];
+        if (role == NotePlayerRole.Sub)
+        {
+            source.volume = volumFlight[step % 32] / 2;
+
+        }
+        else
+        {
+
+            source.volume = volumFlight[step % 32];
+        }
+        source.PlayScheduled(when);
         poolIndex++;
     }
-    public void PlaySubNote(double when)
+    public void PlaySubNote(double when, int step)
     {
-        int targetStep = lastScheduledStep + 1;
-        int note = melody[targetStep % melody.Length];
-        ScheduleNote(note, when);
-        lastScheduledStep = targetStep;
+        int noteIndex = melody[step % melody.Length];
+        if (noteIndex < 0 || noteIndex >= currentInstrument.Length) return;
+        ScheduleNote(noteIndex, when, step);
+        //Debug.Log($"step : {step % melody.Length}");
     }
+    public void OnBPMChanged()
+    {
+        foreach (var a in audioPool)
+        {
+            a.Stop();
+            a.clip = null;
+        }
+
+        double now = AudioSettings.dspTime;
+        clock = GlobalBeatClock.I;
+        nextEventTime = now + clock.intervalSec;
+        poolIndex = 0;
+    }
+
+    //public void PlaySubNote(double when)
+    //{
+    //    int targetStep = lastScheduledStep + 1;
+    //    int note = melody[targetStep % melody.Length];
+    //    ScheduleNote(note, when);
+    //    lastScheduledStep = targetStep;
+    //}
     public void UpdateSubmelody(int[] melody)
     {
         var label = MelodyClassifier.MelodyClassifier96.Classify(melody );
@@ -268,25 +315,25 @@ public class NotePlayerSynced : MonoBehaviour
         clock.SetTempo(newBpm);
     }
 
-    public void OnBPMChanged()
-    {
-        clock = GlobalBeatClock.I; // 마스터 시계 참조
-        bpm = clock.bpm;
-        Debug.Log($"BPM 변경 : {bpm}");
-        // 기존 예약 초기화
-        foreach (var a in audioPool)
-        {
-            a.Stop();
-            a.clip = null;
-        }
+    //public void OnBPMChanged()
+    //{
+    //    clock = GlobalBeatClock.I; // 마스터 시계 참조
+    //    bpm = clock.bpm;
+    //    Debug.Log($"BPM 변경 : {bpm}");
+    //    // 기존 예약 초기화
+    //    foreach (var a in audioPool)
+    //    {
+    //        a.Stop();
+    //        a.clip = null;
+    //    }
 
-        // 새 intervalSec 반영해서 nextEventTime 리셋
-        double now = AudioSettings.dspTime;
-        nextEventTime = now + clock.intervalSec;
+    //    // 새 intervalSec 반영해서 nextEventTime 리셋
+    //    double now = AudioSettings.dspTime;
+    //    nextEventTime = now + clock.intervalSec;
 
-        //lastScheduledStep = -1;
-        //poolIndex = 0;
-    }
+    //    //lastScheduledStep = -1;
+    //    //poolIndex = 0;
+    //}
     private void ScheduleNextNote()
     {
         double now = clock.Now;

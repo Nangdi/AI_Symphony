@@ -56,6 +56,9 @@ public class MusicalInstrumentsStore : MonoBehaviour
     public AudioClip[] Xylophone2;
 
     public AudioClip[][] instruments;
+
+    public MelodyData[] datas;
+
     private void Awake()
     {
         instruments = new AudioClip[][]
