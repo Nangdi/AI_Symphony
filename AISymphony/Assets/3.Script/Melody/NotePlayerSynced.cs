@@ -65,6 +65,7 @@ public class NotePlayerSynced : MonoBehaviour
     int melodyIndex = 0;
     //Test
     float currentTime;
+    int instrumentPresetNum;
     private void Awake()
     {
         melody = new int[buttonGroupSelectors.Length];
@@ -113,7 +114,29 @@ public class NotePlayerSynced : MonoBehaviour
         melody = data.notes;
         SetBPM(data.bpm);
     }
-
+    public void MusicalInstrumentPreSet()
+    {
+        instrumentPresetNum++;
+        switch (instrumentPresetNum)
+        {
+            case 0:
+                currentInstrument = instrumentsStore.GetInstrument(13);
+                subPlayer.currentInstrument = instrumentsStore.GetInstrument(7);
+                thirdPlayer.currentInstrument = instrumentsStore.GetInstrument(12);
+                break;
+            case 1:
+                currentInstrument = instrumentsStore.GetInstrument(11);
+                subPlayer.currentInstrument = instrumentsStore.GetInstrument(12);
+                thirdPlayer.currentInstrument = instrumentsStore.GetInstrument(14);
+                break;
+            case 2:
+                currentInstrument = instrumentsStore.GetInstrument(2);
+                subPlayer.currentInstrument = instrumentsStore.GetInstrument(16);
+                thirdPlayer.currentInstrument = instrumentsStore.GetInstrument(7);
+                break;
+        }
+      
+    }
     void PlayRhythmStep()
     {
         int targetStep = lastScheduledStep + 1;
