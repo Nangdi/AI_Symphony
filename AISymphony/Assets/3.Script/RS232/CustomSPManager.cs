@@ -3,21 +3,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using TMPro;
 using UnityEngine;
 
 public class CustomSPManager : SerialPortManager
 {
     [SerializeField] NotePlayerSynced mainNotePlayer;
+    public TMP_Text receiveDataText;
     protected override void Awake()
     {
         base.Awake();
     }
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Q))
-        //{
-        //    ReceivedData("D1423");
-        //}
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            ReceivedData("D12345678123456781234567812345670");
+        }
     }
     protected override void Start()
     {
@@ -26,12 +28,11 @@ public class CustomSPManager : SerialPortManager
 
     protected override void ReceivedData(string _data)
     {
-        if(_data.Length < 5)
+        if(_data.Length < 32)
         {
             Debug.Log($"불량데이터 : {_data}");
             return;
         }
-        
 
         if (_data[0] == 'D')
         {
@@ -43,14 +44,21 @@ public class CustomSPManager : SerialPortManager
         }
         Debug.Log($"{_data} int배열로 변경");
         int[] melodyArray = ConvertToIntArray(_data);
-        foreach (var item in melodyArray)
+        string temp = "";
+        for (int i = 0; i < melodyArray.Length; i++)
         {
-            if(item < 0)
+            temp += melodyArray[i];
+        }
+        Debug.Log($"변경된 배열 {temp} , 길이 : {melodyArray.Length}");
+        for (int i = 0; i < melodyArray.Length; i++)
+        {
+            if (melodyArray[i] < 0)
             {
-                Debug.Log($"불량데이터 0포함된 배열");
-                return;
+                Debug.Log($"불량데이터 0포함된 배열인덱스 : {i+1}노트 고장");
+                melodyArray[i] = 0;
             }
         }
+        receiveDataText.text = _data;
         mainNotePlayer.ChangeMelody(mainNotePlayer, melodyArray);
 
     }

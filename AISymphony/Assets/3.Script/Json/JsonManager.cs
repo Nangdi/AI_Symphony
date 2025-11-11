@@ -19,8 +19,10 @@ public class JsonManager : MonoBehaviour
     public static JsonManager instance;
     public GameSettingData gameSettingData;
     public PortJson portJson;
+    public PortJson portJson1;
     private string gameDataPath;
     private string portPath;
+    private string portPath1;
     private void Awake()
     {
         if (instance == null)
@@ -34,10 +36,12 @@ public class JsonManager : MonoBehaviour
         }
 
         portPath = Path.Combine(Application.streamingAssetsPath, "port.json");
+        portPath1 = Path.Combine(Application.streamingAssetsPath, "port1.json");
         gameDataPath = Path.Combine(Application.persistentDataPath, "gameSettingData.json");
 
         gameSettingData = LoadData(gameDataPath, gameSettingData);
         portJson= LoadData(portPath, portJson);
+        portJson1= LoadData(portPath1, portJson1);
     }
 
     //저장할 json 객체 , 경로설정
