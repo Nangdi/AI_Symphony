@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
@@ -6,7 +7,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -28,6 +28,17 @@ public class SerialPortManager1 : MonoBehaviour
     public TMP_Text sendMessage;
     public PresetData[] strongDatas;
     public PresetData[] tempDatas;
+
+    private int tempoIndex =0;
+    private int strongIndex =0;
+    private int instrumentIndex =0;
+    private int bpmIndex =0;
+
+    bool isReconnecting = false;
+
+    public event Action OnConnected;
+    public event Action OnDisconnected;
+    private bool isConnected = false;
     protected virtual void Awake()
     {
         if (Instance == null)
@@ -44,10 +55,25 @@ public class SerialPortManager1 : MonoBehaviour
     
     protected virtual void Start()
     {
+        OnConnected += () =>
+        {
+            Debug.Log(">>> 연결됨 이벤트!");
+        };
+
+        OnDisconnected += () =>
+        {
+            Debug.Log(">>> 연결 끊김 이벤트!");
+        };
+
         // 포트 열기
         portJson = JsonManager.instance.portJson1;
         Debug.Log($"포트 데이터 로드됨: COM={portJson.com}, Baud={portJson.baudLate}");
         serialPort = new SerialPort(portJson.com, portJson.baudLate, Parity.None, 8, StopBits.One);
+        ReceivedData("M1");
+        ReceivedData("S1");
+        ReceivedData("T1");
+        ReceivedData("B1");
+        SendData("H1");
 
         Debug.Log("포트연결시도");
         //serialPort.ReadTimeout = 500;
@@ -58,7 +84,7 @@ public class SerialPortManager1 : MonoBehaviour
             Debug.Log("연결완료");
             StartSerialPortReader();
         }
-        SendData("H1");
+
     }
 
 
@@ -69,11 +95,18 @@ public class SerialPortManager1 : MonoBehaviour
         {
             ReceivedData("M3");
         }
+        //if (serialPort == null || !serialPort.IsOpen)
+        //{
+        //    if (!isReconnecting)   // 재연결 중복방지
+        //        StartCoroutine(ReconnectRoutine());
+        //}
     }
     async void StartSerialPortReader()
     {
         cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
+
+        OnConnected?.Invoke();
 
         while (serialPort != null && serialPort.IsOpen)
         {
@@ -94,9 +127,28 @@ public class SerialPortManager1 : MonoBehaviour
             catch (TimeoutException ex)
             {
                 // 데이터가 없을 때는 무시
-                Debug.LogWarning("데이터 수신 시간 초과: " + ex.Message);
+                // 데이터가 없을 때는 무시
+                Debug.LogWarning("포트 읽기 오류 발생 (포트 끊김 가능): " + ex.Message);
+
+                // 포트가 꺼졌다고 판단
+                //HandleDisconnect();
             }
+
         }
+        //HandleDisconnect();
+    }
+    private void HandleDisconnect()
+    {
+        if (isConnected)
+        {
+            isConnected = false;
+            Debug.LogWarning("포트 연결 끊김!");
+            OnDisconnected?.Invoke();
+        }
+
+        // 재연결 시작
+        if (!isReconnecting)
+            StartCoroutine(ReconnectRoutine());
     }
     private string ReadSerialData()
     {
@@ -120,9 +172,11 @@ public class SerialPortManager1 : MonoBehaviour
             return "";
             //return serialPort.ReadLine(); // 데이터 읽기
         }
-        catch (TimeoutException)
+        catch (Exception ex)
         {
-            return null; // 시간 초과 시 null 반환
+            EndPort();
+
+            return null;
         }
     }
     private string TryGetCompleteMessage(string buffer)
@@ -201,6 +255,40 @@ public class SerialPortManager1 : MonoBehaviour
 
 
     }
+    public void ReceivedData_public(string data)
+    {
+        ReceivedData(data);
+    }
+    public void TempPreSet(string protocol)
+    {
+        switch (protocol)
+        {
+            case "T":
+                ReceivedData(protocol + (tempoIndex+1));
+                tempoIndex++;
+                tempoIndex %= 3;
+                break;
+            case "S":
+                ReceivedData(protocol + (strongIndex+1));
+                strongIndex++;
+                strongIndex %= 3;
+                break;
+            case "M":
+                ReceivedData(protocol + (instrumentIndex+1));
+                instrumentIndex++;
+                instrumentIndex %= 3;
+                break;
+            case "B":
+                ReceivedData(protocol + (bpmIndex+1));
+                bpmIndex++;
+                bpmIndex %= 4;
+                break;
+        }
+
+
+      
+
+    }
 
     void OnApplicationQuit()
     {
@@ -208,6 +296,11 @@ public class SerialPortManager1 : MonoBehaviour
 
         // 종료 시 쓰레드 정리 및 포트 닫기
 
+        EndPort();
+
+    }
+    private void EndPort()
+    {
         if (cancellationTokenSource != null)
         {
             Debug.Log("Task 종료");
@@ -217,7 +310,6 @@ public class SerialPortManager1 : MonoBehaviour
         {
             serialPort.Close();
         }
-
     }
 
     private StringBuilder receiveBuffer = new StringBuilder();
@@ -243,6 +335,44 @@ public class SerialPortManager1 : MonoBehaviour
         }
     }
 
+    IEnumerator ReconnectRoutine()
+    {
+        isReconnecting = true;
 
+        while (serialPort == null || !serialPort.IsOpen)
+        {
+            Debug.Log("연결 끊김 → 재연결 시도...");
+            TryOpenPort();
+
+            if (serialPort != null && serialPort.IsOpen)
+            {
+                Debug.Log("재연결 성공!");
+                StartSerialPortReader();
+                break;
+            }
+
+            yield return new WaitForSeconds(3f);
+        }
+
+        isReconnecting = false;
+    }
+    private void TryOpenPort()
+    {
+        try
+        {
+            serialPort = new SerialPort(portJson.com, portJson.baudLate, Parity.None, 8, StopBits.One);
+            serialPort.Open();
+
+            if (serialPort.IsOpen)
+            {
+                Debug.Log("포트 연결 성공!");
+                StartSerialPortReader();
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning($"포트 열기 실패: {ex.Message}");
+        }
+    }
 
 }
