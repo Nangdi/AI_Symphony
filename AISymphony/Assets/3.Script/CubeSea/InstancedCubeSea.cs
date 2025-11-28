@@ -128,7 +128,8 @@ public class InstancedCubeSea : MonoBehaviour
     float targetColor = 0;
     void Start()
     {
-        int temp = JsonManager.instance.gameSettingData.grid;
+        int temp = 300;
+        //int temp = JsonManager.instance.gameSettingData.grid;
         gridX = temp;
         gridZ = (temp/15) *4;
         // 0.003125
@@ -501,19 +502,19 @@ public class InstancedCubeSea : MonoBehaviour
         switch (colorEmotion)
         {
             case "happy":
-                targetColor = Random.Range(0.07f, 0.24f);
+                targetColor = 0;
                 break;
             case "sad":
-                targetColor = Random.Range(0.58f, 0.63f);
+                targetColor = 1;
                 break;
         }
         switch (speedEmotion)
         {
             case "angry":
-                targetSpeed = 7;
+                targetSpeed = 1;
                 break;
             case "calm":
-                targetSpeed = 3;
+                targetSpeed = 0;
                 break;
         }
         speedX = targetSpeed;

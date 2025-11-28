@@ -24,6 +24,9 @@ public class NotePlayerSynced : MonoBehaviour
     [SerializeField] private NotePlayerSynced thirdPlayer;
     [SerializeField] private InstancedCubeSea cubeSea;
     [SerializeField] private MelodyEmotionAnalyzer emotionAnalyzer;
+    [SerializeField] private VFXController vfxController;
+    public GlobalBeatClock clock;
+
     [Header("Role")]
     public NotePlayerRole role;
     [Header("Pattern")]
@@ -55,7 +58,7 @@ public class NotePlayerSynced : MonoBehaviour
     public int octave = 1;
 
     // 🔹 싱크 관련
-    private GlobalBeatClock clock;
+    //private GlobalBeatClock clock;
     private int lastScheduledStep = -1;
     private double nextEventTime = 0.0;   // ✅ 다음 예약할 DSP 시간
 
@@ -81,13 +84,13 @@ public class NotePlayerSynced : MonoBehaviour
     void Start()
     {
         
-        clock = GlobalBeatClock.I; // 마스터 시계 참조
-        if (clock == null)
-        {
-            Debug.LogError("GlobalBeatClock이 씬에 없습니다!");
-            enabled = false;
-            return;
-        }
+        //clock = GlobalBeatClock.I; // 마스터 시계 참조
+        //if (clock == null)
+        //{
+        //    Debug.LogError("GlobalBeatClock이 씬에 없습니다!");
+        //    enabled = false;
+        //    return;
+        //}
         if(role == NotePlayerRole.Main)
         {
         clock.OnBeatStep += HandleBeatStep;
@@ -97,16 +100,16 @@ public class NotePlayerSynced : MonoBehaviour
 
         SetInstruments();
         toggle.onValueChanged.AddListener(OnToggleChanged);
-        currentTime = bpm;
+        //currentTime = bpm;
 
-            MelodyData data = instrumentsStore.datas[8];
-            volumFlight = data.strongys;
-        if (role == NotePlayerRole.Main)
-        {
-            rhythmFlight = data.tempos;
-            //melody = data.notes;
-            SetBPM(data.bpm);
-        }
+        //    MelodyData data = instrumentsStore.datas[8];
+        //    volumFlight = data.strongys;
+        //if (role == NotePlayerRole.Main)
+        //{
+        //    rhythmFlight = data.tempos;
+        //    //melody = data.notes;
+        //    SetBPM(data.bpm);
+        //}
 
     }
     public void PreSet(int index)
@@ -230,9 +233,11 @@ public class NotePlayerSynced : MonoBehaviour
             string temp = ConvertToP(currentIndex);
             scannerMover.SetStep(currentIndex);
             SerialPortManager.Instance.SendData(temp);
-           
-            //Debug.Log($"currentNote : {currentNote} , Pos : {currentIndex} ");
-            cubeSea.OnNotePlayed(step % melody.Length, currentNote);
+
+
+            vfxController.SetPower((int)volumFlight[step % 32]);
+            //cubeSea.OnNotePlayed(step % melody.Length, currentNote);
+            vfxController.sendVFXEventPos(step % melody.Length, currentNote);
             if (currentIndex % 8 == 0)
             {
                 for (int i = 0; i < tempAraay.Length; i++)
@@ -240,7 +245,8 @@ public class NotePlayerSynced : MonoBehaviour
                     tempAraay[i] = melody[i + (8 * groupIndx)];
                 }
                 var emotion = emotionAnalyzer.AnalyzeEmotion(tempAraay);
-                cubeSea.UpdateEmotionInfluence(emotion.colorEmotion, emotion.speedEmotion);
+                //cubeSea.UpdateEmotionInfluence(emotion.colorEmotion, emotion.speedEmotion);
+                vfxController.SetColorOrSpeed(emotion.colorEmotion, emotion.speedEmotion);
             }
         }
     }

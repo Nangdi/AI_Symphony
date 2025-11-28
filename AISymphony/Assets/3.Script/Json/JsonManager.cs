@@ -5,7 +5,12 @@ using System.IO;
 using UnityEngine;
 public class GameSettingData
 {
-    public int grid = 300;
+    public bool useUnityOnTop = false;
+    public int[] displayIndex = new int[] { 0, 1, 2 };
+    public int paticleRate = 70000;
+    public float targetTime = 300f;
+    public Vector2 paticleScale = new Vector2(2, 15);
+    public bool activeCube = true;
 }
 public class PortJson
 {
@@ -71,5 +76,9 @@ public class JsonManager : MonoBehaviour
         //예시 실행코드
         //JsonManager.LoadData(파일경로 , 데이터클래스);
 
+    }
+    public void SaveSetting()
+    {
+        SaveData(gameSettingData, gameDataPath);
     }
 }
