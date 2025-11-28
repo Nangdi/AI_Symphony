@@ -34,11 +34,11 @@ public class SerialPortManager1 : MonoBehaviour
     private int instrumentIndex =0;
     private int bpmIndex =0;
 
-    bool isReconnecting = false;
+    //bool isReconnecting = false;
 
-    public event Action OnConnected;
-    public event Action OnDisconnected;
-    private bool isConnected = false;
+    //public event Action OnConnected;
+    //public event Action OnDisconnected;
+    //private bool isConnected = false;
     protected virtual void Awake()
     {
         if (Instance == null)
@@ -55,15 +55,19 @@ public class SerialPortManager1 : MonoBehaviour
     
     protected virtual void Start()
     {
-        OnConnected += () =>
-        {
-            Debug.Log(">>> 연결됨 이벤트!");
-        };
+        //OnConnected += () =>
+        //{
+        //    Debug.Log(">>> 연결됨 이벤트!");
+        //};
 
-        OnDisconnected += () =>
-        {
-            Debug.Log(">>> 연결 끊김 이벤트!");
-        };
+        //OnDisconnected += () =>
+        //{
+        //    Debug.Log(">>> 연결 끊김 이벤트!");
+        //};
+        ReceivedData("M2");
+        ReceivedData("S2");
+        ReceivedData("T2");
+        ReceivedData("B2");
 
         // 포트 열기
         portJson = JsonManager.instance.portJson1;
@@ -77,10 +81,6 @@ public class SerialPortManager1 : MonoBehaviour
             Debug.Log("연결완료");
             StartSerialPortReader();
         }
-        ReceivedData("M1");
-        ReceivedData("S1");
-        ReceivedData("T1");
-        ReceivedData("B1");
         SendData("H1");
 
         //serialPort.ReadTimeout = 500;
@@ -106,7 +106,7 @@ public class SerialPortManager1 : MonoBehaviour
         cancellationTokenSource = new CancellationTokenSource();
         var token = cancellationTokenSource.Token;
 
-        OnConnected?.Invoke();
+        //OnConnected?.Invoke();
 
         while (serialPort != null && serialPort.IsOpen)
         {
@@ -137,19 +137,7 @@ public class SerialPortManager1 : MonoBehaviour
         }
         //HandleDisconnect();
     }
-    private void HandleDisconnect()
-    {
-        if (isConnected)
-        {
-            isConnected = false;
-            Debug.LogWarning("포트 연결 끊김!");
-            OnDisconnected?.Invoke();
-        }
-
-        // 재연결 시작
-        if (!isReconnecting)
-            StartCoroutine(ReconnectRoutine());
-    }
+   
     private string ReadSerialData()
     {
         try
@@ -334,27 +322,7 @@ public class SerialPortManager1 : MonoBehaviour
         }
     }
 
-    IEnumerator ReconnectRoutine()
-    {
-        isReconnecting = true;
-
-        while (serialPort == null || !serialPort.IsOpen)
-        {
-            Debug.Log("연결 끊김 → 재연결 시도...");
-            TryOpenPort();
-
-            if (serialPort != null && serialPort.IsOpen)
-            {
-                Debug.Log("재연결 성공!");
-                StartSerialPortReader();
-                break;
-            }
-
-            yield return new WaitForSeconds(3f);
-        }
-
-        isReconnecting = false;
-    }
+   
     private void TryOpenPort()
     {
         try
