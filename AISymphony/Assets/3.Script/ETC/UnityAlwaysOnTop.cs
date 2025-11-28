@@ -23,10 +23,12 @@ public class UnityAlwaysOnTop : MonoBehaviour
     [SerializeField] private Canvas canvas1;
     [SerializeField] private Canvas canvas2;
     [SerializeField] private Canvas canvas3;
+    public GameObject cameraRoot;
 
     void Start()
     {
-
+        cam1 = cameraRoot.transform.GetChild(0).GetComponent<Camera>();
+        cam2 = cameraRoot.transform.GetChild(0).GetComponent<Camera>();
 
         if (UnityEngine.Application.isEditor)
         {
@@ -36,18 +38,21 @@ public class UnityAlwaysOnTop : MonoBehaviour
         Cursor.visible = false;
         // 에디터에선 무시
         cam1.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[0];
-        canvas1.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[0];
+        if (canvas1 != null)
+            canvas1.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[0];
         if (Display.displays.Length > 1)
         {
             Display.displays[1].Activate();
             cam2.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[1];
-            canvas2.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[1];
+            if (canvas2 != null)
+                canvas2.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[1];
         }
         if (Display.displays.Length > 2)
         {
             Display.displays[2].Activate();
             cam3.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[2];
-            canvas3.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[2];
+            if (canvas3 != null)
+                canvas3.targetDisplay = JsonManager.instance.gameSettingData.displayIndex[2];
         }
 
         if (!JsonManager.instance.gameSettingData.useUnityOnTop)

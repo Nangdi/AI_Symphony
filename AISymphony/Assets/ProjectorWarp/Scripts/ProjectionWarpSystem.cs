@@ -36,7 +36,7 @@ namespace MultiProjectorWarpSystem
         public int projectorCount;
         public bool regenerateCamera = true;
         public bool reverseOrdering = false;
-        
+        public Toggle reverseOrderToggle;
 
         [Header("Edit Mode")]
         public int selectedMesh;
@@ -77,7 +77,10 @@ namespace MultiProjectorWarpSystem
         public string saveCalibrationFile;
 
         
-
+        public void ChangeOrder()
+        {
+            reverseOrdering = reverseOrderToggle.isOn;
+        }
 
         public void UpdateFilename()
         {
@@ -142,6 +145,8 @@ namespace MultiProjectorWarpSystem
             {	
                 LoadCalibration(defaultCalibrationFile);	
             }
+
+            reverseOrdering = JsonManager.instance.gameSettingData.reverseOrdering;
 
             AssignReferences();
             SelectProjector(0, false);

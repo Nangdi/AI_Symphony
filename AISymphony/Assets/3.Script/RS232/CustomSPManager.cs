@@ -27,8 +27,8 @@ public class CustomSPManager : SerialPortManager
   
     protected override void Start()
     {
-        base.Start();
         InitRestTime();
+        base.Start();
 
 
     }

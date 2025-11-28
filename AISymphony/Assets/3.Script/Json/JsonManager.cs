@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameSettingData
 {
     public bool useUnityOnTop = false;
+    public bool reverseOrdering = false;
     public int[] displayIndex = new int[] { 0, 1, 2 };
     public int paticleRate = 70000;
     public float targetTime = 300f;
