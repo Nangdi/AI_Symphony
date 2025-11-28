@@ -69,14 +69,7 @@ public class SerialPortManager1 : MonoBehaviour
         portJson = JsonManager.instance.portJson1;
         Debug.Log($"포트 데이터 로드됨: COM={portJson.com}, Baud={portJson.baudLate}");
         serialPort = new SerialPort(portJson.com, portJson.baudLate, Parity.None, 8, StopBits.One);
-        ReceivedData("M1");
-        ReceivedData("S1");
-        ReceivedData("T1");
-        ReceivedData("B1");
-        SendData("H1");
-
         Debug.Log("포트연결시도");
-        //serialPort.ReadTimeout = 500;
         serialPort.Open();
         if (serialPort.IsOpen)
         {
@@ -84,6 +77,13 @@ public class SerialPortManager1 : MonoBehaviour
             Debug.Log("연결완료");
             StartSerialPortReader();
         }
+        ReceivedData("M1");
+        ReceivedData("S1");
+        ReceivedData("T1");
+        ReceivedData("B1");
+        SendData("H1");
+
+        //serialPort.ReadTimeout = 500;
 
     }
 
@@ -115,7 +115,7 @@ public class SerialPortManager1 : MonoBehaviour
                 // 데이터를 수신
 
                 string input = await Task.Run(() => ReadSerialData(), token);
-                //string data = GetData(input);
+                string data = input;
 
                 if (!string.IsNullOrEmpty(input) && input.Length >= 2)
                 {
@@ -156,7 +156,7 @@ public class SerialPortManager1 : MonoBehaviour
         {
 
             string input = serialPort.ReadExisting(); // 데이터 읽기
-            //Debug.Log($"필터 전 : {input}");
+            Debug.Log($"필터 전 : {input}");
             if (!string.IsNullOrEmpty(input))
             {
                 serialBuffer.Append(input); // (1)
@@ -164,7 +164,7 @@ public class SerialPortManager1 : MonoBehaviour
                 string processed = TryGetCompleteMessage(serialBuffer.ToString()); // (2)
                 if (processed != null) // (3)
                 {
-                    //Debug.Log("완전한 데이터 수신: " + processed); // (4)
+                    Debug.Log("완전한 데이터 수신: " + processed); // (4)
                     serialBuffer.Clear(); // (5)
                 }
                 return processed;
@@ -172,9 +172,8 @@ public class SerialPortManager1 : MonoBehaviour
             return "";
             //return serialPort.ReadLine(); // 데이터 읽기
         }
-        catch (Exception ex)
+        catch (TimeoutException)
         {
-            EndPort();
 
             return null;
         }
