@@ -36,6 +36,10 @@ public class CustomSPManager : SerialPortManager
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
+            ReceivedData("D12345678123456781234567812345600");
+        }
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
             ReceivedData("D12345678123456781234567812345670");
         }
 
