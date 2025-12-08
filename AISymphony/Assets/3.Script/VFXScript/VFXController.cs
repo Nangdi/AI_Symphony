@@ -39,7 +39,7 @@ public class VFXController : MonoBehaviour
         float x = UnityEngine.Random.Range(-18f, 18f);
         float y = UnityEngine.Random.Range(-5f, 5f);
         float tempX = Mathf.Lerp(-28f, 28f, currentIndex / 31f);
-        float tempY = Mathf.Lerp(-8f, 8f, pitch / 7f);
+        float tempY = Mathf.Lerp(-15f, 15f, pitch / 7f);
         Vector2 pos = new Vector2(tempX, tempY);
 
         vfx.SetVector2("eventPos", pos);

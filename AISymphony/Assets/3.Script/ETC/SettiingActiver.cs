@@ -5,7 +5,12 @@ using UnityEngine;
 public class SettiingActiver : MonoBehaviour
 {
     public GameObject settingPanels;
-    public Canvas debugTool;
+    public CanvasGroup debugTool;
+    public int index;
+    private void Start()
+    {
+        //Screen.SetResolution(1200, 1200, false);
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -15,17 +20,32 @@ public class SettiingActiver : MonoBehaviour
     }
     private void SetActivesettingPanels()
     {
-        Debug.Log("설정창 활성화");
-        settingPanels.SetActive(!settingPanels.activeSelf);
-        Cursor.visible = settingPanels.activeSelf;
-        if(settingPanels.activeSelf)
-        {
-            debugTool.targetDisplay = 1;
+        settingPanels.SetActive(false);
+        debugTool.alpha = 0;
+        Cursor.visible = false;
+
+        if (index == 0)
+        { 
+            settingPanels.SetActive(true);
+            Cursor.visible = true;
         }
-        else
+        if(index == 1)
         {
-            debugTool.targetDisplay = 2;
+            debugTool.alpha = 1;
+            Cursor.visible = true;
         }
+        index++;
+        index %= 3;
+        //Debug.Log("설정창 활성화");
+        //Cursor.visible = settingPanels.activeSelf;
+        //if(settingPanels.activeSelf)
+        //{
+        //    debugTool.alpha = 1;
+        //}
+        //else
+        //{
+        //    debugTool.alpha = 0;
+        //}
 
     }
 }

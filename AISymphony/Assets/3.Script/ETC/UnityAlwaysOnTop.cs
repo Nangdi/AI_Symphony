@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using static System.Net.Mime.MediaTypeNames;
@@ -29,7 +30,7 @@ public class UnityAlwaysOnTop : MonoBehaviour
     {
         cam1 = cameraRoot.transform.GetChild(0).GetComponent<Camera>();
         cam2 = cameraRoot.transform.GetChild(0).GetComponent<Camera>();
-
+        //StartCoroutine(ForceWindow());
         if (UnityEngine.Application.isEditor)
         {
             Debug.Log("에디터에서는 AlwaysOnTop 설정 생략");
@@ -74,8 +75,12 @@ public class UnityAlwaysOnTop : MonoBehaviour
         }
 
 
-
         //화면
 
+    }
+    IEnumerator ForceWindow()
+    {
+        yield return new WaitForSeconds(5f);
+        ForceWindowed.Force();
     }
 }

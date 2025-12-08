@@ -228,7 +228,7 @@ public class NotePlayerSynced : MonoBehaviour
             {
                 tempAraay[i] = melody[i + (8 * groupIndx)] + 1;
             }
-            UpdateDebugGroup(groupIndx);
+            //UpdateDebugGroup(groupIndx);
             UpdateSubmelody(tempAraay);
             string temp = ConvertToP(currentIndex);
             scannerMover.SetStep(currentIndex);

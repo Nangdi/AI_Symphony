@@ -46,9 +46,10 @@ public class CustomSPManager : SerialPortManager
         lapseTimer += Time.deltaTime;
         if (lapseTimer >= targetTime && !isWaitMode)
         {
+            Debug.Log("대기모드실행");
             isWaitMode = true;
             lapseTimer = 0;
-            SendData("H1");
+            serialPortManager1.SendData("H1");
             serialPortManager1.ReceivedData_public("T2");
             serialPortManager1.ReceivedData_public("B2");
             serialPortManager1.ReceivedData_public("S2");
@@ -56,16 +57,32 @@ public class CustomSPManager : SerialPortManager
     }
     protected override void ReceivedData(string _data)
     {
-        if (!cashingString.Equals(_data))
+        //if (!cashingString.Equals(_data))
+        //{
+        //    lapseTimer = 0;
+        //    isWaitMode = false;
+        //}
+
+        for (int i = 0; i < cashingString.Length; i++)
         {
-            lapseTimer = 0;
-            isWaitMode = false;
+            if (cashingString[i] != _data[i])
+            {
+                if (_data[i] == '0' || cashingString[i] =='0')
+                {
+                    Debug.Log("0이있음");
+                    continue;
+                }
+                Debug.Log("다른신호인식");
+                lapseTimer = 0;
+                isWaitMode = false;
+                break;
+            }
+
         }
         cashingString = _data;
-        
 
 
-        if(_data.Length < 32)
+        if (_data.Length < 32)
         {
             Debug.Log($"불량데이터 : {_data}");
             return;

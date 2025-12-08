@@ -183,6 +183,7 @@ public class SerialPortManager1 : MonoBehaviour
 
     public void SendData(string message)
     {
+        Debug.Log("대기시간보냄");
         if (serialPort.IsOpen)
         {
             try

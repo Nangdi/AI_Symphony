@@ -146,7 +146,7 @@ namespace MultiProjectorWarpSystem
                 LoadCalibration(defaultCalibrationFile);	
             }
 
-            reverseOrdering = JsonManager.instance.gameSettingData.reverseOrdering;
+            //reverseOrdering = JsonManager.instance.gameSettingData.reverseOrdering;
 
             AssignReferences();
             SelectProjector(0, false);
