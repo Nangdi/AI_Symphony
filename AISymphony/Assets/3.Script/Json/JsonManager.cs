@@ -5,7 +5,16 @@ using System.IO;
 using UnityEngine;
 public class GameSettingData
 {
-    public int grid = 300;
+    public bool useUnityOnTop = false;
+    public bool reverseOrdering = false;
+    public int[] displayIndex = new int[] { 0, 1, 2 };
+    public int paticleRate = 70000;
+    public float targetTime = 300f;
+    public Vector2 paticleScale = new Vector2(2, 15);
+    public bool activeCube = true;
+    public float contrast = 0;
+    public float saturation = 0;
+    public float exposure = 0;
 }
 public class PortJson
 {
@@ -19,8 +28,10 @@ public class JsonManager : MonoBehaviour
     public static JsonManager instance;
     public GameSettingData gameSettingData;
     public PortJson portJson;
+    public PortJson portJson1;
     private string gameDataPath;
     private string portPath;
+    private string portPath1;
     private void Awake()
     {
         if (instance == null)
@@ -34,10 +45,12 @@ public class JsonManager : MonoBehaviour
         }
 
         portPath = Path.Combine(Application.streamingAssetsPath, "port.json");
+        portPath1 = Path.Combine(Application.streamingAssetsPath, "port1.json");
         gameDataPath = Path.Combine(Application.persistentDataPath, "gameSettingData.json");
 
         gameSettingData = LoadData(gameDataPath, gameSettingData);
-        portJson= LoadData(portPath, portJson);
+        portJson = LoadData(portPath, portJson);
+        portJson1 = LoadData(portPath1, portJson1);
     }
 
     //저장할 json 객체 , 경로설정
@@ -67,5 +80,9 @@ public class JsonManager : MonoBehaviour
         //예시 실행코드
         //JsonManager.LoadData(파일경로 , 데이터클래스);
 
+    }
+    public void SaveSetting()
+    {
+        SaveData(gameSettingData, gameDataPath);
     }
 }

@@ -50,26 +50,27 @@ public class ScannerMover : MonoBehaviour
     void Update()
     {
         // 현재 진행된 Tick (division 단위)
-        double songTicks = clock.SongPosTicks;
-        int currentStep = (int)songTicks % totalSteps;
-        int nextStep = (currentStep + 1) % totalSteps;
+        //double songTicks = clock.SongPosTicks;
+        //int currentStep = (int)songTicks % totalSteps;
+        //int nextStep = (currentStep + 1) % totalSteps;
 
-        // 0~1 사이의 박자 진행률
-        float stepProgress = (float)(songTicks - Mathf.FloorToInt((float)songTicks));
-        float fromX, toX;
-        //if (currentStep == 0)
-        //    fromX = startX;
-        //else
-        if(currentStep != -1)
-        {
-            fromX = notePositions[currentStep].GetChild(0).position.x;
+        //// 0~1 사이의 박자 진행률
+        //float stepProgress = (float)(songTicks - Mathf.FloorToInt((float)songTicks));
+        //float fromX, toX;
+        ////if (currentStep == 0)
+        ////    fromX = startX;
+        ////else
+        //if (currentStep != -1)
+        //{
+        //    Debug.Log($"현재 무버 스탭 {currentStep}");
+        //    fromX = notePositions[currentStep].GetChild(0).position.x;
 
-            transform.position = new Vector3(fromX, transform.position.y, transform.position.z);
-        }
+        //    transform.position = new Vector3(fromX, transform.position.y, transform.position.z);
+        //}
 
         //if (nextStep == 0)
         //{
-            // 끝에서 시작으로 넘어갈 때 → 순간 이동
+        // 끝에서 시작으로 넘어갈 때 → 순간 이동
         //    return;
         //}
         //else if (nextStep == 7)
@@ -93,7 +94,7 @@ public class ScannerMover : MonoBehaviour
         //if (currentStep == 0)
         //    fromX = startX;
         //else
-        fromX = notePositions[step].position.x;
+        fromX = notePositions[step].GetChild(0).position.x;
 
         //if (nextStep == 0)
         //{

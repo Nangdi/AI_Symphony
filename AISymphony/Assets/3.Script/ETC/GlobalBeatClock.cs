@@ -69,8 +69,8 @@ public class GlobalBeatClock : MonoBehaviour
         //stepCounter = 0;
 
         // 🔹 모든 플레이어 큐 리셋
-        foreach (var p in players)
-            p.OnBPMChanged();
+        //foreach (var p in players)
+        //    p.OnBPMChanged();
     }
 
     private void OnBPMInputChanged(string value)

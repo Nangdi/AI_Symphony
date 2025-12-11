@@ -13,9 +13,9 @@ public class MelodyEmotionAnalyzer : MonoBehaviour
 
         JudgmentScore(notes);
 
-        Debug.Log($"happyScore : {happyScore} , sadScore : {sadScore} ,calmScore : {calmScore}, ,angry : {angryScore}" );
+        //Debug.Log($"happyScore : {happyScore} , sadScore : {sadScore} ,calmScore : {calmScore}, ,angry : {angryScore}" );
         var emotion = GetEmotionResults(happyScore, sadScore, calmScore, angryScore);
-        Debug.Log($"Color: {emotion.colorEmotion}, Speed: {emotion.speedEmotion}");
+        //Debug.Log($"Color: {emotion.colorEmotion}, Speed: {emotion.speedEmotion}");
         //TechPalette.CenterHue
         //기쁨 - 0.1~0.2
         //슬픔 - 0.5~0.6
