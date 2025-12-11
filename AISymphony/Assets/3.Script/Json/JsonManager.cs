@@ -12,6 +12,9 @@ public class GameSettingData
     public float targetTime = 300f;
     public Vector2 paticleScale = new Vector2(2, 15);
     public bool activeCube = true;
+    public float contrast = 0;
+    public float saturation = 0;
+    public float exposure = 0;
 }
 public class PortJson
 {
@@ -46,8 +49,8 @@ public class JsonManager : MonoBehaviour
         gameDataPath = Path.Combine(Application.persistentDataPath, "gameSettingData.json");
 
         gameSettingData = LoadData(gameDataPath, gameSettingData);
-        portJson= LoadData(portPath, portJson);
-        portJson1= LoadData(portPath1, portJson1);
+        portJson = LoadData(portPath, portJson);
+        portJson1 = LoadData(portPath1, portJson1);
     }
 
     //저장할 json 객체 , 경로설정
