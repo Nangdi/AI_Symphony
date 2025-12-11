@@ -18,11 +18,7 @@ public class colorSetting : MonoBehaviour
 
     void Start()
     {
-        colorAdjust.contrast.value = JsonManager.instance.gameSettingData.contrast;
-        colorAdjust.postExposure.value = JsonManager.instance.gameSettingData.exposure;
-        colorAdjust.saturation.value = JsonManager.instance.gameSettingData.saturation;
 
-        InitColorValue();
         // VolumeProfile에서 ColorAdjustments 컴포넌트 가져오기
         if (volume.profile.TryGet(out ColorAdjustments ca))
         {
@@ -32,6 +28,10 @@ public class colorSetting : MonoBehaviour
         {
             Debug.LogError("❌ VolumeProfile에 ColorAdjustments가 없습니다!");
         }
+        InitColorValue();
+        colorAdjust.contrast.value = JsonManager.instance.gameSettingData.contrast;
+        colorAdjust.postExposure.value = JsonManager.instance.gameSettingData.exposure;
+        colorAdjust.saturation.value = JsonManager.instance.gameSettingData.saturation;
     }
     public void SetContrast(string textValue )
     {
