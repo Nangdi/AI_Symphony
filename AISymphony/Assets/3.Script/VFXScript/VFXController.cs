@@ -39,8 +39,8 @@ public class VFXController : MonoBehaviour
         //-28~28 , -8~-8
         float x = UnityEngine.Random.Range(-18f, 18f);
         float y = UnityEngine.Random.Range(-5f, 5f);
-        float tempX = Mathf.Lerp(-rippleRangeX, rippleRangeX, currentIndex / 31f);
-        float tempY = Mathf.Lerp(-7f, 7f, pitch / 7f);
+        float tempX = Mathf.Lerp(-4, 4, currentIndex / 31f);
+        float tempY = Mathf.Lerp(-3.7f, 3.5f, pitch / 7f);
         Vector2 pos = new Vector2(tempX, tempY);
 
         vfx.SetVector2("eventPos", pos);
@@ -74,7 +74,7 @@ public class VFXController : MonoBehaviour
     }
     public void SetPower(int strength)
     {
-        vfx.SetFloat("RippleRatio", strength);
+        //vfx.SetFloat("RippleRatio", strength);
     }
     //¿Œ«≤« µÂ OnEdit
     public void UpdatePaticleSetting()
