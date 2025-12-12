@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UI;
 
 
@@ -69,9 +70,20 @@ namespace MultiProjectorWarpSystem
             
             system = GetComponent<ProjectionWarpSystem>();
         }
-        
-        
-        void Update() {
+
+
+        void Update()
+        {
+
+            if (JsonManager.instance.gameSettingData.overlapSetting)
+            {
+                float tempX = Input.GetAxis("Horizontal");
+
+                system.overlap.x += tempX*0.01f;
+
+            }
+
+
             //don't allow keyboard inputs when input field is focused
             CalibrationManager calibrationManager = system.calibrationManager;
             if (calibrationManager.topRangeInputField.isFocused ||

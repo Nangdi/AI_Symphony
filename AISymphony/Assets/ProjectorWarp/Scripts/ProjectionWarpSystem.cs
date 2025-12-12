@@ -136,7 +136,7 @@ namespace MultiProjectorWarpSystem
         }
         void Start()
         {
-            
+            defaultCalibrationFile = Application.dataPath + "/../projector_calibration.json";
             if (File.Exists(Application.dataPath + "/../default_calibration.json"))	
             {	
                 LoadCalibration(Application.dataPath + "/../default_calibration.json");	
@@ -775,7 +775,7 @@ namespace MultiProjectorWarpSystem
         public bool LoadCalibration(string path)
         {
             if (path == null || path.Length == 0) return false;
-
+            Debug.Log(path);
             string json = "";
             try
             {

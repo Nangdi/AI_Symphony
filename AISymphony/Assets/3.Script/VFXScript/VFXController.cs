@@ -17,7 +17,8 @@ public class VFXController : MonoBehaviour
     [SerializeField] private TMP_InputField spawnRate_IF;
     [SerializeField] private TMP_InputField scaleX_IF;
     [SerializeField] private TMP_InputField scaleY_IF;
-
+    [SerializeField] private TMP_InputField rangeY_IF;
+    private float rippleRangeX;
 
     private void Start()
     {
@@ -38,8 +39,8 @@ public class VFXController : MonoBehaviour
         //-28~28 , -8~-8
         float x = UnityEngine.Random.Range(-18f, 18f);
         float y = UnityEngine.Random.Range(-5f, 5f);
-        float tempX = Mathf.Lerp(-28f, 28f, currentIndex / 31f);
-        float tempY = Mathf.Lerp(-15f, 15f, pitch / 7f);
+        float tempX = Mathf.Lerp(-rippleRangeX, rippleRangeX, currentIndex / 31f);
+        float tempY = Mathf.Lerp(-7f, 7f, pitch / 7f);
         Vector2 pos = new Vector2(tempX, tempY);
 
         vfx.SetVector2("eventPos", pos);
@@ -81,12 +82,17 @@ public class VFXController : MonoBehaviour
         int spawnRate = int.Parse(spawnRate_IF.text);
         float scaleX = float.Parse(scaleX_IF.text);
         float scaleY = float.Parse(scaleY_IF.text);
+        float rangeX = float.Parse(rangeY_IF.text);
+        rippleRangeX = rangeX;
         Vector2 paticleScale = new Vector2(scaleX, scaleY);
         vfx.SetInt("Rate", spawnRate);
         vfx.SetVector2("paticleScale", paticleScale);
 
         JsonManager.instance.gameSettingData.paticleRate = spawnRate;
+        JsonManager.instance.gameSettingData.rippleRangeX = rangeX;
         JsonManager.instance.gameSettingData.paticleScale = paticleScale;
+
+
 
     }
     //시작할때 Json파일에서 초기값 받아오기 , InputFiled에 넣기
@@ -95,6 +101,7 @@ public class VFXController : MonoBehaviour
         spawnRate_IF.text = $"{JsonManager.instance.gameSettingData.paticleRate}";
         scaleX_IF.text = $"{JsonManager.instance.gameSettingData.paticleScale.x}";
         scaleY_IF.text = $"{JsonManager.instance.gameSettingData.paticleScale.y}";
+        rangeY_IF.text = $"{JsonManager.instance.gameSettingData.rippleRangeX}";
 
         UpdatePaticleSetting();
     }

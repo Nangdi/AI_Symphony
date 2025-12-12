@@ -17,9 +17,9 @@ MonoBehaviour:
     position:
       serializedVersion: 2
       x: -1839
-      y: 1512
+      y: 1566
       width: 1065
-      height: 641
+      height: 587
     contents:
     - model: {fileID: 8926484042661615104}
       id: 0
@@ -73,7 +73,7 @@ MonoBehaviour:
     x: -2062
     y: -190
     width: 3427
-    height: 2561
+    height: 2704
 --- !u!114 &114350483966674976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2503,7 +2503,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: UnityEditor.VFX.AABox, Unity.VisualEffectGraph.Editor,
           Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-      m_SerializableObject: '{"center":{"x":0.0,"y":0.0,"z":0.0},"size":{"x":58.599998474121097,"y":36.0,"z":1.0}}'
+      m_SerializableObject: '{"center":{"x":0.0,"y":0.0,"z":0.0},"size":{"x":60.0,"y":22.299999237060548,"z":1.0}}'
     m_Space: 0
   m_Property:
     name: Box
@@ -4525,7 +4525,7 @@ MonoBehaviour:
   - {fileID: 8926484042661614950}
   - {fileID: 8926484042661614952}
   - {fileID: 8926484042661614958}
-  m_UIPosition: {x: 941, y: 1487}
+  m_UIPosition: {x: 941, y: 1610}
   m_UICollapsed: 0
   m_UISuperCollapsed: 0
   m_InputSlots:
@@ -6459,7 +6459,7 @@ MonoBehaviour:
       m_Type:
         m_SerializableType: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
-      m_SerializableObject: 0
+      m_SerializableObject: -0.001
     m_Space: 2147483647
   m_Property:
     name: y
@@ -7434,7 +7434,7 @@ MonoBehaviour:
     linkedSlots:
     - outputSlot: {fileID: 8926484042661615109}
       inputSlot: {fileID: 8926484042661615687}
-    position: {x: -1422, y: 1571}
+    position: {x: -1372, y: 1625}
     expandedSlots: []
     expanded: 0
 --- !u!114 &8926484042661615109
