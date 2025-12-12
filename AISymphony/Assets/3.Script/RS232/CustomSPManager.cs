@@ -36,23 +36,17 @@ public class CustomSPManager : SerialPortManager
     {
         if (Input.GetKeyDown(KeyCode.W))
         {
-            ReceivedData("D12345678123456781234567812345600");
+            ReceivedData("D12345678123456781234567812345622");
         }
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            ReceivedData("D12345678123456781234567812345670");
+            ReceivedData("D12345678123456781234567812345671");
         }
 
         lapseTimer += Time.deltaTime;
         if (lapseTimer >= targetTime && !isWaitMode)
         {
-            Debug.Log("대기모드실행");
-            isWaitMode = true;
-            lapseTimer = 0;
-            serialPortManager1.SendData("H1");
-            serialPortManager1.ReceivedData_public("T2");
-            serialPortManager1.ReceivedData_public("B2");
-            serialPortManager1.ReceivedData_public("S2");
+            RestMode();
         }
     }
     protected override void ReceivedData(string _data)
@@ -74,6 +68,7 @@ public class CustomSPManager : SerialPortManager
                 }
                 Debug.Log("다른신호인식");
                 lapseTimer = 0;
+                serialPortManager1.ReceivedData_public("S1");
                 isWaitMode = false;
                 break;
             }
@@ -117,7 +112,7 @@ public class CustomSPManager : SerialPortManager
 
     }
 
-    public int[] ConvertToIntArray(string _seatSignal)
+    private int[] ConvertToIntArray(string _seatSignal)
     {
 
         int[] seatIndex = _seatSignal.Select(c =>( c - '0')-1).ToArray();
@@ -135,16 +130,32 @@ public class CustomSPManager : SerialPortManager
 
         return result;
     }
-    public void UpdateRestTime()
+    private void UpdateRestTime()
     {
         float restTime = float.Parse(restTime_IF.text);
         targetTime = restTime;
 
         JsonManager.instance.gameSettingData.targetTime = targetTime;
     }
-    public void InitRestTime()
+    private void InitRestTime()
     {
         restTime_IF.text = $"{JsonManager.instance.gameSettingData.targetTime}";
         UpdateRestTime();
+    }
+    private void RestMode()
+    {
+        Debug.Log("대기모드실행");
+        isWaitMode = true;
+        lapseTimer = 0;
+        serialPortManager1.SendData("H1");
+        serialPortManager1.ReceivedData_public("T2");
+        serialPortManager1.ReceivedData_public("B2");
+        //serialPortManager1.ReceivedData_public("S2");
+        float[] zeroStrong = new float[32];
+        //for (int i = 0; i < zeroStrong.Length; i++)
+        //{
+        //    zeroStrong[i] = 0.1f;
+        //}
+        mainNotePlayer.SetStrong(zeroStrong);
     }
 }
