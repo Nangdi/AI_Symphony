@@ -65,25 +65,51 @@ namespace MultiProjectorWarpSystem
         
 
         ProjectionWarpSystem system;
-        
+        public GameObject cube;
+        public GameObject texture;
+        private bool changed;
         void Start() {
             
             system = GetComponent<ProjectionWarpSystem>();
+            cube.SetActive(JsonManager.instance.gameSettingData.activeCube);
+            texture.SetActive(JsonManager.instance.gameSettingData.activeCube);
         }
 
 
         void Update()
         {
-
+                changed = false;
             if (JsonManager.instance.gameSettingData.overlapSetting)
             {
-                float tempX = Input.GetAxis("Horizontal");
 
-                system.overlap.x += tempX*0.01f;
+                float delta = Input.GetAxis("Horizontal") * 0.01f;
 
+                switch (system.arrangement)
+                {
+                    case ProjectionWarpSystem.CameraArragement.HORIZONTAL_ORTHOGRAPHIC:
+                    case ProjectionWarpSystem.CameraArragement.HORIZONTAL_PERSPECTIVE:
+                    case ProjectionWarpSystem.CameraArragement.HORIZONTAL_PERSPECTIVE_CIRCULAR:
+                        system.overlap.x += delta;
+                        changed = true;
+                        break;
+
+                    case ProjectionWarpSystem.CameraArragement.VERTICAL_ORTHOGRAPHIC:
+                    case ProjectionWarpSystem.CameraArragement.VERTICAL_PERSPECTIVE:
+                    case ProjectionWarpSystem.CameraArragement.VERTICAL_PERSPECTIVE_CIRCULAR:
+                        system.overlap.y += delta;
+                        changed = true;
+                        break;
+                }
             }
 
 
+            if (changed)
+            {
+                system.UpdateSourceCameras();
+                system.UpdateProjectionCameras();
+                system.UpdateProjectionWarpGUI();
+
+            }
             //don't allow keyboard inputs when input field is focused
             CalibrationManager calibrationManager = system.calibrationManager;
             if (calibrationManager.topRangeInputField.isFocused ||
