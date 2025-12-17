@@ -94,6 +94,7 @@ public class NotePlayerSynced : MonoBehaviour
         if(role == NotePlayerRole.Main)
         {
         clock.OnBeatStep += HandleBeatStep;
+            SetDefualtMelody();
         }
         bpm = clock.bpm;
         division = clock.division;
@@ -111,6 +112,7 @@ public class NotePlayerSynced : MonoBehaviour
         //    SetBPM(data.bpm);
         //}
 
+
     }
     public void PreSet(int index)
     {
@@ -121,6 +123,12 @@ public class NotePlayerSynced : MonoBehaviour
         thirdPlayer.volumFlight = data.strongys;
         melody = data.notes;
         SetBPM(data.bpm);
+    }
+    public void SetDefualtMelody()
+    {
+        MelodyData data = Instantiate( instrumentsStore.datas[7]);
+        melody = data.notes;
+        
     }
     public void MusicalInstrumentPreSet(char index)
     {

@@ -16,7 +16,7 @@ public class CustomSPManager : SerialPortManager
     public float lapseTimer = 0;
     public bool isWaitMode = false;
     private float targetTime = 300f;
-
+    private bool isRunning = false;
 
 
     private string cashingString = "";
@@ -29,6 +29,7 @@ public class CustomSPManager : SerialPortManager
     {
         InitRestTime();
         base.Start();
+            StartCoroutine(RestMode());
 
 
     }
@@ -44,9 +45,9 @@ public class CustomSPManager : SerialPortManager
         }
 
         lapseTimer += Time.deltaTime;
-        if (lapseTimer >= targetTime && !isWaitMode)
+        if (lapseTimer >= targetTime-3 && !isWaitMode)
         {
-            RestMode();
+            StartCoroutine(RestMode());
         }
     }
     protected override void ReceivedData(string _data)
@@ -142,12 +143,16 @@ public class CustomSPManager : SerialPortManager
         restTime_IF.text = $"{JsonManager.instance.gameSettingData.targetTime}";
         UpdateRestTime();
     }
-    private void RestMode()
+    private IEnumerator RestMode()
     {
-        Debug.Log("대기모드실행");
         isWaitMode = true;
+        //yield return new WaitForSeconds(1);
+        Debug.Log("대기모드실행");
         lapseTimer = 0;
         serialPortManager1.SendData("H1");
+
+        yield return new WaitForSeconds(6);
+        //mainNotePlayer.SetDefualtMelody();
         serialPortManager1.ReceivedData_public("T2");
         serialPortManager1.ReceivedData_public("B2");
         //serialPortManager1.ReceivedData_public("S2");

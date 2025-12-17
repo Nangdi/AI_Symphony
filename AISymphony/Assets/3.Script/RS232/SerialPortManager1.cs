@@ -81,7 +81,7 @@ public class SerialPortManager1 : MonoBehaviour
             Debug.Log("연결완료");
             StartSerialPortReader();
         }
-        SendData("H1");
+        //SendData("H1");
 
         //serialPort.ReadTimeout = 500;
 
