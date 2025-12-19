@@ -16,6 +16,7 @@ using UnityEngine;
 public class SerialPortManager1 : MonoBehaviour
 {
     public static SerialPortManager1 Instance { get; private set; }
+    [SerializeField] private CustomSPManager customSPManager;
     public NotePlayerSynced notePlayer;
     PortJson portJson = new PortJson();
 
@@ -33,7 +34,8 @@ public class SerialPortManager1 : MonoBehaviour
     private int strongIndex =0;
     private int instrumentIndex =0;
     private int bpmIndex =0;
-
+    private float[] defaultStrong = new float[32];
+    private string cashingStrong= "S2";
     //bool isReconnecting = false;
 
     //public event Action OnConnected;
@@ -64,11 +66,15 @@ public class SerialPortManager1 : MonoBehaviour
         //{
         //    Debug.Log(">>> 연결 끊김 이벤트!");
         //};
+        for (int i = 0; i < defaultStrong.Length; i++)
+        {
+            defaultStrong[i] = 2;
+        }
         ReceivedData("M2");
         ReceivedData("S2");
         ReceivedData("T2");
         ReceivedData("B2");
-
+        //StartCoroutine(delay_co());
         // 포트 열기
         portJson = JsonManager.instance.portJson1;
         Debug.Log($"포트 데이터 로드됨: COM={portJson.com}, Baud={portJson.baudLate}");
@@ -81,7 +87,7 @@ public class SerialPortManager1 : MonoBehaviour
             Debug.Log("연결완료");
             StartSerialPortReader();
         }
-        //SendData("H1");
+        SendData("H1");
 
         //serialPort.ReadTimeout = 500;
 
@@ -207,6 +213,17 @@ public class SerialPortManager1 : MonoBehaviour
         //Debug.Log($"{data} 신호보내기");
 
         sendMessage.text = $"{data} 수신완료";
+        if (customSPManager != null)
+        {
+            customSPManager.lapseTimer = 0;
+            customSPManager.isWaitMode = false;
+            if (data[0] != 'S')
+            {
+                notePlayer.SetStrong(strongDatas[cashingStrong[1] - '1'].data);
+                Debug.Log($"{cashingStrong},  {data[1] - '1'}");
+            }
+        }
+        Debug.Log(customSPManager);
         switch (data[0])
         {
             case 'M':
@@ -234,6 +251,7 @@ public class SerialPortManager1 : MonoBehaviour
             case 'S':
                 Debug.Log($"셈여림변경 {data[1]}번");
                 notePlayer.SetStrong(strongDatas[data[1]- '1'].data);
+                cashingStrong = data;
                 break;
             case 'T':
                 Debug.Log($"박자변경 {data[1]}번");
@@ -342,5 +360,12 @@ public class SerialPortManager1 : MonoBehaviour
             Debug.LogWarning($"포트 열기 실패: {ex.Message}");
         }
     }
-
+    private IEnumerator delay_co()
+    {
+        yield return new WaitForSeconds(1);
+        ReceivedData("M2");
+        ReceivedData("S2");
+        ReceivedData("T2");
+        ReceivedData("B2");
+    }
 }

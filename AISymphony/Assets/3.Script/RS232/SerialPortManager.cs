@@ -16,7 +16,7 @@ public class SerialPortManager : MonoBehaviour
     PortJson portJson = new PortJson();
 
 
-    SerialPort serialPort;
+    protected SerialPort serialPort;
     private CancellationTokenSource cancellationTokenSource; // CancellationTokenSource Ãß°¡
     private StringBuilder serialBuffer = new StringBuilder();
     private Queue<string> dataQueue = new Queue<string>();

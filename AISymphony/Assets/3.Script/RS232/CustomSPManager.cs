@@ -68,9 +68,7 @@ public class CustomSPManager : SerialPortManager
                     continue;
                 }
                 Debug.Log("다른신호인식");
-                lapseTimer = 0;
-                serialPortManager1.ReceivedData_public("S1");
-                isWaitMode = false;
+                ResetRestmode();
                 break;
             }
 
@@ -162,5 +160,11 @@ public class CustomSPManager : SerialPortManager
         //    zeroStrong[i] = 0.1f;
         //}
         mainNotePlayer.SetStrong(zeroStrong);
+    }
+    public void ResetRestmode()
+    {
+        lapseTimer = 0;
+        serialPortManager1.ReceivedData_public("S1");
+        isWaitMode = false;
     }
 }
