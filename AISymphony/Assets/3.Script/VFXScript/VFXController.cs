@@ -19,7 +19,7 @@ public class VFXController : MonoBehaviour
     [SerializeField] private TMP_InputField scaleY_IF;
     [SerializeField] private TMP_InputField rangeY_IF;
     private float rippleRangeX;
-
+    private float addValue;
     private void Start()
     {
         InitPaticleValue();
@@ -30,6 +30,9 @@ public class VFXController : MonoBehaviour
         {
             //sendVFXEventPos();
         }
+        addValue += Time.deltaTime*5;
+        vfx.SetFloat("waveValue", addValue);
+
     }
 
 
@@ -37,13 +40,13 @@ public class VFXController : MonoBehaviour
     public void sendVFXEventPos(int currentIndex , int pitch)
     {
         //-28~28 , -8~-8
-        float x = UnityEngine.Random.Range(-18f, 18f);
-        float y = UnityEngine.Random.Range(-5f, 5f);
         float tempX = Mathf.Lerp(-rippleRangeX, rippleRangeX, currentIndex / 31f);
-        float tempY = Mathf.Lerp(-7f, 7f, pitch / 7f);
+        float tempY = Mathf.Lerp(-2.5f, 2.5f, pitch / 7f);
         Vector2 pos = new Vector2(tempX, tempY);
 
         vfx.SetVector2("eventPos", pos);
+        addValue = 1;
+        vfx.SetFloat("waveValue", 1);
     }
     public void SetColorOrSpeed(string color , string speed)
     {
@@ -74,23 +77,23 @@ public class VFXController : MonoBehaviour
     }
     public void SetPower(int strength)
     {
-        vfx.SetFloat("RippleRatio", strength);
+        //vfx.SetFloat("RippleRatio", strength);
     }
     //¿Œ«≤« µÂ OnEdit
     public void UpdatePaticleSetting()
     {
-        int spawnRate = int.Parse(spawnRate_IF.text);
-        float scaleX = float.Parse(scaleX_IF.text);
-        float scaleY = float.Parse(scaleY_IF.text);
+        //int spawnRate = int.Parse(spawnRate_IF.text);
+        //float scaleX = float.Parse(scaleX_IF.text);
+        //float scaleY = float.Parse(scaleY_IF.text);
         float rangeX = float.Parse(rangeY_IF.text);
         rippleRangeX = rangeX;
-        Vector2 paticleScale = new Vector2(scaleX, scaleY);
-        vfx.SetInt("Rate", spawnRate);
-        vfx.SetVector2("paticleScale", paticleScale);
+        //Vector2 paticleScale = new Vector2(scaleX, scaleY);
+        //vfx.SetInt("Rate", spawnRate);
+        //vfx.SetVector2("paticleScale", paticleScale);
 
-        JsonManager.instance.gameSettingData.paticleRate = spawnRate;
+        //JsonManager.instance.gameSettingData.paticleRate = spawnRate;
         JsonManager.instance.gameSettingData.rippleRangeX = rangeX;
-        JsonManager.instance.gameSettingData.paticleScale = paticleScale;
+        //JsonManager.instance.gameSettingData.paticleScale = paticleScale;
 
 
 
