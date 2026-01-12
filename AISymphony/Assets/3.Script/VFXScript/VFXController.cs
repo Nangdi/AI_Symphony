@@ -20,6 +20,7 @@ public class VFXController : MonoBehaviour
     [SerializeField] private TMP_InputField rangeY_IF;
     private float rippleRangeX;
     private float addValue;
+    public float waveSpeed = 5;
     private void Start()
     {
         InitPaticleValue();
@@ -30,7 +31,7 @@ public class VFXController : MonoBehaviour
         {
             //sendVFXEventPos();
         }
-        addValue += Time.deltaTime*5;
+        addValue += Time.deltaTime* waveSpeed;
         vfx.SetFloat("waveValue", addValue);
 
     }
@@ -77,7 +78,7 @@ public class VFXController : MonoBehaviour
     }
     public void SetPower(int strength)
     {
-        //vfx.SetFloat("RippleRatio", strength);
+        vfx.SetFloat("pulseStrength", strength);
     }
     //¿Œ«≤« µÂ OnEdit
     public void UpdatePaticleSetting()

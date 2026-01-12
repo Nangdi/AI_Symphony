@@ -135,7 +135,6 @@ public class SerialPortManager : MonoBehaviour
             try
             {
                 serialPort.WriteLine(message); // 메시지 송신 (줄 바꿈 추가)
-                Debug.Log("Sent: " + message);
             }
             catch (System.Exception ex)
             {

@@ -16,7 +16,8 @@ public class CustomSPManager : SerialPortManager
     public float lapseTimer = 0;
     public bool isWaitMode = false;
     private float targetTime = 300f;
-    private bool isRunning = false;
+    private Coroutine restCoroutine;
+    private int restModeIndex = 1;
 
 
     private string cashingString = "";
@@ -43,12 +44,16 @@ public class CustomSPManager : SerialPortManager
         {
             ReceivedData("D12345678123456781234567812345671");
         }
-
-        lapseTimer += Time.deltaTime;
-        if (lapseTimer >= targetTime-3 && !isWaitMode)
+        if (!isWaitMode)
         {
-            StartCoroutine(RestMode());
+            lapseTimer += Time.deltaTime;
+            if (lapseTimer >= targetTime - 3 )
+            {
+                restCoroutine = StartCoroutine(RestMode());
+            }
         }
+      
+       
     }
     protected override void ReceivedData(string _data)
     {
@@ -62,13 +67,21 @@ public class CustomSPManager : SerialPortManager
         {
             if (cashingString[i] != _data[i])
             {
-                if (_data[i] == '0' || cashingString[i] =='0')
+                if (_data[i] == '0' || cashingString[i] == '0')
                 {
                     Debug.Log("0이있음");
                     continue;
                 }
                 Debug.Log("다른신호인식");
-                ResetRestmode();
+
+                if (restCoroutine != null)
+                {
+                    StopCoroutine(restCoroutine);
+                    restCoroutine = null;
+                }
+                ExitRestmode();
+
+
                 break;
             }
 
@@ -129,7 +142,7 @@ public class CustomSPManager : SerialPortManager
 
         return result;
     }
-    private void UpdateRestTime()
+    public void UpdateTargetTime()
     {
         float restTime = float.Parse(restTime_IF.text);
         targetTime = restTime;
@@ -139,7 +152,7 @@ public class CustomSPManager : SerialPortManager
     private void InitRestTime()
     {
         restTime_IF.text = $"{JsonManager.instance.gameSettingData.targetTime}";
-        UpdateRestTime();
+        UpdateTargetTime();
     }
     private IEnumerator RestMode()
     {
@@ -147,24 +160,44 @@ public class CustomSPManager : SerialPortManager
         //yield return new WaitForSeconds(1);
         Debug.Log("대기모드실행");
         lapseTimer = 0;
-        serialPortManager1.SendData("H1");
+        serialPortManager1.SendData($"H{restModeIndex}");
 
         yield return new WaitForSeconds(6);
         //mainNotePlayer.SetDefualtMelody();
-        serialPortManager1.ReceivedData_public("T2");
-        serialPortManager1.ReceivedData_public("B2");
+        //serialPortManager1.ReceivedData_public("T2");
+        //serialPortManager1.ReceivedData_public("B2");
         //serialPortManager1.ReceivedData_public("S2");
         float[] zeroStrong = new float[32];
-        //for (int i = 0; i < zeroStrong.Length; i++)
-        //{
-        //    zeroStrong[i] = 0.1f;
-        //}
+        
         mainNotePlayer.SetStrong(zeroStrong);
     }
-    public void ResetRestmode()
+    public void ExitRestmode()
     {
         lapseTimer = 0;
-        serialPortManager1.ReceivedData_public("S1");
+        if (isWaitMode)
+        {
+            int strong = GetStrongToRestmodeIndex(restModeIndex);
+            serialPortManager1.ReceivedData_public($"S{strong}");
+            restModeIndex++;
+            if(restModeIndex > 5)
+            {
+                restModeIndex = 1;
+            }
+
+        }
         isWaitMode = false;
+    }
+    private int GetStrongToRestmodeIndex(int restIndex)
+    {
+        switch (restIndex)
+        {
+            case 1:
+                return 2;
+            case 2:
+                return 3;
+            default:
+                return 1;
+        }
+
     }
 }

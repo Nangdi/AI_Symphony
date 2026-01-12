@@ -44,6 +44,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469d97b9ea444c148aa7966f8bf98b06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorMode: 0
+  baseDeep: {r: 0.04, g: 0.05, b: 0.12, a: 1}
+  baseViolet: {r: 0.15, g: 0.06, b: 0.26, a: 1}
+  waterA: {r: 0.1, g: 0.55, b: 0.95, a: 1}
+  waterB: {r: 0.15, g: 0.25, b: 0.95, a: 1}
+  warmA: {r: 1, g: 0.88, b: 0.2, a: 1}
+  warmB: {r: 1, g: 0.38, b: 0.6, a: 1}
+  sandA: {r: 0.92, g: 0.55, b: 0.28, a: 1}
+  sandB: {r: 0.98, g: 0.78, b: 0.55, a: 1}
+  inkBase: {r: 0.08, g: 0.08, b: 0.1, a: 1}
+  goldAccent: {r: 1, g: 0.82, b: 0.28, a: 1}
   cubeMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
   instancedMaterial: {fileID: 2100000, guid: 43f8d21b221411842bb038beb2ea311f, type: 2}
   gridX: 160
@@ -66,4 +77,31 @@ MonoBehaviour:
   noteRadius: 1.5
   pulseScaleMax: 7.68
   falloffExp: 2
-  scaleDecay: 2.5
+  pulseDecay: 2.5
+  centerHue: 0.56
+  hueRange: 0.08
+  hueNoiseScale: 0.08
+  hueSpeed: 0.1
+  saturation: 1
+  valueBase: 0.3
+  valuePulseBoost: 0.3
+  pulseBar: {fileID: 0}
+  barWidth: 0.12
+  barLength: 3
+  barUpSpeed: 2.5
+  barDownSpeed: 1.8
+  barFadePerSec: 1.6
+  barHeightOffset: 0
+  barColorByPitch: 1
+  pulseInvertColor: 1
+  pulseHueShift01: 0.5
+  pulseColorMix: 0.9
+  pulseSatMul: 1.05
+  pulseValMul: 0.95
+  pulseMixExp: 1.2
+  irrNoiseScale: 0.2
+  irrNoiseSpeed: 0.2
+  irrTimeWarp: 0.1
+  irrAmpJitter: 0.1
+  irrSecondWave: 0.08
+  irrSecondMul: 1.7

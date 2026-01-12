@@ -116,13 +116,14 @@ public class NotePlayerSynced : MonoBehaviour
     }
     public void PreSet(int index)
     {
-        MelodyData data = instrumentsStore.datas[index];
+        MelodyData data = Instantiate(instrumentsStore.datas[index]);
         rhythmFlight = data.tempos;
         volumFlight = data.strongys;
         subPlayer.volumFlight = data.strongys;
         thirdPlayer.volumFlight = data.strongys;
         melody = data.notes;
         SetBPM(data.bpm);
+        
     }
     public void SetDefualtMelody()
     {

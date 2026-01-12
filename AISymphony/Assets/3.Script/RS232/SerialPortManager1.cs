@@ -36,6 +36,8 @@ public class SerialPortManager1 : MonoBehaviour
     private int bpmIndex =0;
     private float[] defaultStrong = new float[32];
     private string cashingStrong= "S2";
+
+   
     //bool isReconnecting = false;
 
     //public event Action OnConnected;
@@ -189,7 +191,6 @@ public class SerialPortManager1 : MonoBehaviour
 
     public void SendData(string message)
     {
-        Debug.Log("대기시간보냄");
         if (serialPort.IsOpen)
         {
             try
@@ -220,10 +221,8 @@ public class SerialPortManager1 : MonoBehaviour
             if (data[0] != 'S')
             {
                 notePlayer.SetStrong(strongDatas[cashingStrong[1] - '1'].data);
-                Debug.Log($"{cashingStrong},  {data[1] - '1'}");
             }
         }
-        Debug.Log(customSPManager);
         switch (data[0])
         {
             case 'M':
