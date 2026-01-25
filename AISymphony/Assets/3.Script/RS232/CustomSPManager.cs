@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Security;
 using TMPro;
 using UnityEngine;
 
@@ -43,6 +44,22 @@ public class CustomSPManager : SerialPortManager
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ReceivedData("D12345678123456781234567812345671");
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            SendData("H1");
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SendData("H2");
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            SendData("H3");
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            SendData("H4");
         }
         if (!isWaitMode)
         {
@@ -157,12 +174,12 @@ public class CustomSPManager : SerialPortManager
     private IEnumerator RestMode()
     {
         isWaitMode = true;
-        //yield return new WaitForSeconds(1);
-        Debug.Log("대기모드실행");
         lapseTimer = 0;
+        yield return new WaitForSeconds(1);
         serialPortManager1.SendData($"H{restModeIndex}");
-
-        yield return new WaitForSeconds(6);
+        SendAccordingToRestIndex(restModeIndex);
+        Debug.Log($"대기모드실행 : H{restModeIndex}");
+        yield return new WaitForSeconds(5);
         //mainNotePlayer.SetDefualtMelody();
         //serialPortManager1.ReceivedData_public("T2");
         //serialPortManager1.ReceivedData_public("B2");
@@ -170,22 +187,26 @@ public class CustomSPManager : SerialPortManager
         float[] zeroStrong = new float[32];
         
         mainNotePlayer.SetStrong(zeroStrong);
+        lapseTimer = 0;
+        isWaitMode = true;
     }
     public void ExitRestmode()
     {
         lapseTimer = 0;
+        int strong = GetStrongToRestmodeIndex(restModeIndex);
+        serialPortManager1.ReceivedData_public($"S{strong}");
+        Debug.Log($"대기모드해제");
         if (isWaitMode)
         {
-            int strong = GetStrongToRestmodeIndex(restModeIndex);
-            serialPortManager1.ReceivedData_public($"S{strong}");
             restModeIndex++;
-            if(restModeIndex > 5)
+            if (restModeIndex > 5)
             {
                 restModeIndex = 1;
             }
+        Debug.Log($"다음 대기모드 신호 H{restModeIndex}");
 
-        }
         isWaitMode = false;
+        }
     }
     private int GetStrongToRestmodeIndex(int restIndex)
     {
@@ -199,5 +220,24 @@ public class CustomSPManager : SerialPortManager
                 return 1;
         }
 
+    }
+    private void SendAccordingToRestIndex(int restIndex)
+    {
+        int temp = GetStrongToRestmodeIndex(restIndex);
+        serialPortManager1.ReceivedData_public($"S{temp}");
+        serialPortManager1.ReceivedData_public($"T{temp}");
+
+        switch (restIndex)
+        {
+            case 1:
+            case 4:
+            case 5:
+                serialPortManager1.ReceivedData_public($"B2");
+                break;
+            case 2:
+            case 3:
+                serialPortManager1.ReceivedData_public($"B4");
+                break;
+        }
     }
 }

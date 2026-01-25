@@ -99,15 +99,31 @@ public class SerialPortManager1 : MonoBehaviour
     // 데이터 읽기
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            ReceivedData("M3");
-        }
+        //if (Input.GetKeyDown(KeyCode.A))
+        //{
+        //    ReceivedData("M3");
+        //}
         //if (serialPort == null || !serialPort.IsOpen)
         //{
         //    if (!isReconnecting)   // 재연결 중복방지
         //        StartCoroutine(ReconnectRoutine());
         //}
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            SendData("H1");
+        }
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            SendData("H2");
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            SendData("H3");
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            SendData("H4");
+        }
     }
     async void StartSerialPortReader()
     {
@@ -216,8 +232,8 @@ public class SerialPortManager1 : MonoBehaviour
         sendMessage.text = $"{data} 수신완료";
         if (customSPManager != null)
         {
-            customSPManager.lapseTimer = 0;
-            customSPManager.isWaitMode = false;
+            //customSPManager.lapseTimer = 0;
+            //customSPManager.isWaitMode = false;
             if (data[0] != 'S')
             {
                 notePlayer.SetStrong(strongDatas[cashingStrong[1] - '1'].data);

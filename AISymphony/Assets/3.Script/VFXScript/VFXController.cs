@@ -6,10 +6,12 @@ using DG.Tweening;
 using System;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class VFXController : MonoBehaviour
 {
     public VisualEffect vfx;
+    public VisualEffect auroraVfx;
     public Transform sphereTransform;
     public GameObject ob;
     public int index;
@@ -20,7 +22,11 @@ public class VFXController : MonoBehaviour
     [SerializeField] private TMP_InputField rangeY_IF;
     private float rippleRangeX;
     private float addValue;
+    public float startValue;
     public float waveSpeed = 5;
+    public float blendValue = 0;
+
+    private Coroutine currentCO;
     private void Start()
     {
         InitPaticleValue();
@@ -46,7 +52,7 @@ public class VFXController : MonoBehaviour
         Vector2 pos = new Vector2(tempX, tempY);
 
         vfx.SetVector2("eventPos", pos);
-        addValue = 1;
+        addValue = startValue;
         vfx.SetFloat("waveValue", 1);
     }
     public void SetColorOrSpeed(string color , string speed)
@@ -56,10 +62,10 @@ public class VFXController : MonoBehaviour
         switch (color)
         {
             case "happy":
-                targetColor = 0;
+                targetColor = 1;
                 break;
             case "sad":
-                targetColor = 1;
+                targetColor = 0;
                 break;
         }
         switch (speed)
@@ -71,10 +77,26 @@ public class VFXController : MonoBehaviour
                 targetSpeed = 0;
                 break;
         }
+        Debug.Log($"ÇöÀç ¹ë·ù : {blendValue}");
+        Debug.Log($"¸ñÇ¥ ¹ë·ù : {targetColor}");
+        if(currentCO != null)
+        {
+            StopCoroutine(currentCO);
+        }
+        currentCO =StartCoroutine(LerpChangeColor_co(targetColor));
+    }
+    private IEnumerator LerpChangeColor_co(float targetValue)
+    {
+        while (!Mathf.Approximately(blendValue , targetValue))
+        {
+            blendValue = Mathf.MoveTowards(blendValue, targetValue, Time.deltaTime);
+            vfx.SetFloat("blendValue", blendValue);
+            auroraVfx.SetFloat("blendValue", blendValue);
 
-
-        vfx.SetFloat("colorValue", targetColor);
-        vfx.SetFloat("speed", targetSpeed);
+            yield return null;
+        }
+        vfx.SetFloat("blendValue", targetValue);
+        auroraVfx.SetFloat("blendValue", targetValue);
     }
     public void SetPower(int strength)
     {

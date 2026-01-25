@@ -15,11 +15,11 @@ public class MelodyToEmotion : MonoBehaviour
     }
     private async void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            shuffle();
-            await SendMelodyForEmotion(melody);
-        }
+        //if (Input.GetKeyDown(KeyCode.A))
+        //{
+        //    shuffle();
+        //    await SendMelodyForEmotion(melody);
+        //}
         //if (Input.GetKeyDown(KeyCode.S))
         //{
             //shuffle();

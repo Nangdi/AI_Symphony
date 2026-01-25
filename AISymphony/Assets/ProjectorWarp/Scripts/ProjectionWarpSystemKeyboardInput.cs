@@ -71,8 +71,8 @@ namespace MultiProjectorWarpSystem
         void Start() {
             
             system = GetComponent<ProjectionWarpSystem>();
-            cube.SetActive(JsonManager.instance.gameSettingData.activeCube);
-            texture.SetActive(JsonManager.instance.gameSettingData.activeCube);
+            //cube.SetActive(JsonManager.instance.gameSettingData.activeCube);
+            //texture.SetActive(JsonManager.instance.gameSettingData.activeCube);
         }
 
 
