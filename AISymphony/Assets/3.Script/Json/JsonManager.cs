@@ -17,6 +17,7 @@ public class GameSettingData
     public float saturation = 255;
     public float exposure = 1;
     public bool ViewMappingTexture = true;
+    public float uiOverLapValue = 0;
 }
 public class PortJson
 {

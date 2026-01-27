@@ -13,6 +13,7 @@ public class CustomSPManager : SerialPortManager
     public TMP_Text receiveDataText;
     [SerializeField] SerialPortManager1 serialPortManager1;
     [SerializeField] TMP_InputField restTime_IF;
+    [SerializeField] GameObject waitScreen;
     [Header("타이머관련")]
     public float lapseTimer = 0;
     public bool isWaitMode = false;
@@ -189,12 +190,16 @@ public class CustomSPManager : SerialPortManager
         mainNotePlayer.SetStrong(zeroStrong);
         lapseTimer = 0;
         isWaitMode = true;
+        waitScreen.SetActive(true);
+
+
     }
     public void ExitRestmode()
     {
         lapseTimer = 0;
         int strong = GetStrongToRestmodeIndex(restModeIndex);
         serialPortManager1.ReceivedData_public($"S{strong}");
+        waitScreen.SetActive(false);
         Debug.Log($"대기모드해제");
         if (isWaitMode)
         {
