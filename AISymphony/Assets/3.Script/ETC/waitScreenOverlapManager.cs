@@ -12,6 +12,7 @@ public class waitScreenOverlapManager : MonoBehaviour
     private void Start()
     {
         SetOverLapPos(JsonManager.instance.gameSettingData.uiOverLapValue);
+        Debug.Log(JsonManager.instance.gameSettingData.uiOverLapValue);
     }
     private void Update()
     {
@@ -30,8 +31,8 @@ public class waitScreenOverlapManager : MonoBehaviour
     }
     private void SetOverLapPos(float value)
     {
-        float leftPosX = leftRect.anchoredPosition.x + value;
-        float rightPosX = rightRect.anchoredPosition.x - value;
+        float leftPosX = leftRect.anchoredPosition.x - value;
+        float rightPosX = rightRect.anchoredPosition.x + value;
 
         leftRect.anchoredPosition = new Vector3(leftPosX, leftRect.anchoredPosition.y, leftRect.anchoredPosition.y);
         rightRect.anchoredPosition = new Vector3(rightPosX, rightRect.anchoredPosition.y, rightRect.anchoredPosition.y);

@@ -92,11 +92,11 @@ public class CustomSPManager : SerialPortManager
                 }
                 Debug.Log("다른신호인식");
 
-                if (restCoroutine != null)
-                {
-                    StopCoroutine(restCoroutine);
-                    restCoroutine = null;
-                }
+                //if (restCoroutine != null)
+                //{
+                //    StopCoroutine(restCoroutine);
+                //    restCoroutine = null;
+                //}
                 ExitRestmode();
 
 
